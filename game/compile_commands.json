@@ -6,12 +6,12 @@
       "-Isrc",
       "-I../engine/src",
       "-o",
-      "../bin/Test Game",
+      "../bin/testbed",
       "src/main.c"
     ],
     "directory": "/home/nikoloz/cubic/game",
     "file": "/home/nikoloz/cubic/game/src/main.c",
-    "output": "/home/nikoloz/cubic/bin/Test Game"
+    "output": "/home/nikoloz/cubic/bin/testbed"
   },
   {
     "arguments": [
@@ -21,7 +21,7 @@
       "x86_64-pc-linux-gnu",
       "-emit-obj",
       "-dumpdir",
-      "../bin/Test Game-",
+      "../bin/testbed-",
       "-disable-free",
       "-clear-ast-before-backend",
       "-disable-llvm-verifier",
@@ -73,11 +73,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/main-14505a.o",
+      "/tmp/main-3485c2.o",
       "src/main.c"
     ],
     "directory": "/home/nikoloz/cubic/game",
     "file": "/home/nikoloz/cubic/game/src/main.c",
-    "output": "/tmp/main-14505a.o"
+    "output": "/tmp/main-3485c2.o"
   }
 ]

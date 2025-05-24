@@ -4,8 +4,8 @@
 
 /*--------------------booleans--------------------*/
 typedef int8_t bool;
-#define true (1);
-#define false (0);
+#define true (1)
+#define false (0)
 
 /*--------------------floats--------------------*/
 typedef float f32;
