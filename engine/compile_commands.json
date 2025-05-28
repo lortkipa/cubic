@@ -11,10 +11,10 @@
       "-g",
       "-o",
       "../bin/libengine.so",
-      "src/test.c"
+      "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/test.c",
+    "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
     "output": "/home/nikoloz/Cubic/bin/libengine.so"
   },
   {
@@ -81,11 +81,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/test-b10ffe.o",
-      "src/test.c"
+      "/tmp/logger-004542.o",
+      "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/test.c",
-    "output": "/tmp/test-b10ffe.o"
+    "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
+    "output": "/tmp/logger-004542.o"
   }
 ]

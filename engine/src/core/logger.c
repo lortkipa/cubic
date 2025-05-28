@@ -10,7 +10,7 @@ const char* const header_strings[] =
 void debugLogV(const LogLevel level, const char* channel, const char* format, va_list list)
 {
     // set color, header and channel
-    printf("%s%s: %s", color_strings[level], header_strings[level], channel);
+    printf("%s%s %s: ", color_strings[level], header_strings[level], channel);
 
     // log formated
     vprintf(format, list);

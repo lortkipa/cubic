@@ -83,11 +83,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/main-19e8e8.o",
+      "/tmp/main-59614b.o",
       "src/main.c"
     ],
     "directory": "/home/nikoloz/Cubic/game",
     "file": "/home/nikoloz/Cubic/game/src/main.c",
-    "output": "/tmp/main-19e8e8.o"
+    "output": "/tmp/main-59614b.o"
   }
 ]
