@@ -4,7 +4,7 @@
 
 #include "platform/window_linux.h"
 #include "core/logger.h"
-#include <X11/Xlib.h>
+#include "core/assert.h"
 #include <X11/Xutil.h>
 #include <stdlib.h>
 
@@ -12,6 +12,11 @@ static LinuxWindow* windows = null;
 
 bool createWindow(AppWindow* p_window, const u16 width, const u16 height, const char* title)
 {
+    // check for incorrect params
+    assert("Linux Platform", p_window != NULL, "invalid AppWindow pointer provided");
+    assert("Linux Platform", width > 0, "invalid window width provided");
+    assert("Linux Platform", height > 0, "invalid window height provided");
+
     // allocate windows array on heap if its not allocated yet
     if (!windows)
     {
