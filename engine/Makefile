@@ -1,7 +1,7 @@
 PROJECT = engine
 COMPILER = clang
 SOURCES = $(shell find src -name *.c)
-LIBRARIES = 
+LIBRARIES = -lX11
 FLAGS = -fPIC -shared -Isrc
 
 build_release:
