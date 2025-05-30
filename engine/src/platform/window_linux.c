@@ -84,6 +84,9 @@ bool createWindow(AppWindow* p_window, const u16 width, const u16 height, const 
          ExposureMask | KeyPressMask | KeyReleaseMask
         );
 
+    // turn off key repeats
+    XAutoRepeatOff(windows[window].display);
+
     // show the window
     XMapWindow(windows[window].display, windows[window].handle);
 
@@ -95,6 +98,9 @@ bool createWindow(AppWindow* p_window, const u16 width, const u16 height, const 
 
 void destroyWindow(const AppWindow window)
 {
+    // turn on key repeats
+    XAutoRepeatOn(windows[window].display);
+    
     // destroy window
     XDestroyWindow(windows[window].display, windows[window].handle);
     debugLogSuccess("Linux Window", "window destroyed");
