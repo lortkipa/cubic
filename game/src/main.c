@@ -1,3 +1,4 @@
+#include <core/logger.h>
 #include <platform/window.h>
 
 int main(void)
