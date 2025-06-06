@@ -8,12 +8,13 @@
       "-g",
       "-Wall",
       "-Wextra",
+      "-DDEBUG",
       "-o",
       "../bin/libengine.so",
-      "src/test.c"
+      "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/test.c",
+    "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
     "output": "/home/nikoloz/Cubic/bin/libengine.so"
   },
   {
@@ -54,6 +55,8 @@
       "/usr/lib/clang/19",
       "-I",
       "src",
+      "-D",
+      "DEBUG",
       "-internal-isystem",
       "/usr/lib/clang/19/include",
       "-internal-isystem",
@@ -78,11 +81,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/test-4b612b.o",
-      "src/test.c"
+      "/tmp/logger-0c79d3.o",
+      "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/test.c",
-    "output": "/tmp/test-4b612b.o"
+    "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
+    "output": "/tmp/logger-0c79d3.o"
   }
 ]
