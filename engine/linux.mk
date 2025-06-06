@@ -7,4 +7,4 @@ release:
 	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) -o ../bin/libengine.so
 
 debug:
-	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) -g -Wall -Wextra -o ../bin/libengine.so
+	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) -g -Wall -Wextra -DDEBUG -o ../bin/libengine.so
