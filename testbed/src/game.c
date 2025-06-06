@@ -1,4 +1,5 @@
 #include <core/logger.h>
+#include <core/assert.h>
 
 int main(void)
 {
@@ -12,6 +13,9 @@ int main(void)
     LogWarning("Game", "Logging Warning: %f", 3.14f);
     LogSuccess("Game", "Logging Success: %f", 3.14f);
     LogInfo("Game", "Logging Info: %f", 3.14f);
+
+    assert("Game", 1 == 1, "Fuck! App Failed!");
+    assert("Game", 1 == 2, "Fuck! App Failed!");
 
     ShutdownLogSystem();
 }
