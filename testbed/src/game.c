@@ -1,3 +1,4 @@
+#include <platform/window.h>
 #include <core/logger.h>
 #include <core/assert.h>
 #include <core/memory.h>
@@ -11,15 +12,12 @@ int main(void)
         );
     StartupMemorySystem();
 
-    int* data = AllocateMemory(2 * sizeof(int));
-    data[0] = 100;
-    data[1] = 200;
-    for (int i = 0; i < 2; i++)
+    CreateWindow(1000, 800, "Cubic Engine");
+    while (true)
     {
-        LogInfo("Game", "%d. %d", i+1, data[i]);
+        FireWindowEvents();
     }
-
-    FreeMemory(data, 2 * sizeof(int));
+    destroyWindow();
 
     ShutdownMemorySystem();
     ShutdownLogSystem();
