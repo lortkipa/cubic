@@ -80,11 +80,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/game-358265.o",
+      "/tmp/game-23ab45.o",
       "src/game.c"
     ],
     "directory": "/home/nikoloz/Cubic/testbed",
     "file": "/home/nikoloz/Cubic/testbed/src/game.c",
-    "output": "/tmp/game-358265.o"
+    "output": "/tmp/game-23ab45.o"
   }
 ]

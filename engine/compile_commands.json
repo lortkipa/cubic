@@ -78,11 +78,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/test-8eb320.o",
+      "/tmp/test-4b612b.o",
       "src/test.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/test.c",
-    "output": "/tmp/test-8eb320.o"
+    "output": "/tmp/test-4b612b.o"
   }
 ]

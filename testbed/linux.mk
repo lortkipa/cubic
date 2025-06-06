@@ -7,4 +7,4 @@ release:
 	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) -o ../bin/testbed
 
 debug:
-	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) -g -Wall -Wextra  -o ../bin/testbed
+	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) -g -Wall -Wextra -o ../bin/testbed
