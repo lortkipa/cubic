@@ -6,7 +6,7 @@ void LogAssertionFailure(const char* channel, const char* message, const char* e
 
 #if defined(DEBUG)
 
-#define assert(channel, result, message)                                                     \
+#define Assert(channel, result, message)                                                     \
     if (!(result))                                                                           \
     {                                                                                        \
         LogAssertionFailure(channel, message, #result, __FILE__, __FUNCTION__, __LINE__);    \
@@ -15,6 +15,6 @@ void LogAssertionFailure(const char* channel, const char* message, const char* e
 
 #elif 
 
-#define assert(channel, result, message)
+#define Assert(channel, result, message)
 
 #endif

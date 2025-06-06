@@ -48,14 +48,14 @@ bool StartupLogSystem(const u8 flags)
     verbosityFlags = flags;
 
     // return success as default
-    LogSuccess("Log System", "system initialized");
+    LogSuccess("Log System", "System Initialized");
     return true;
 }
 
 void ShutdownLogSystem(void)
 {
     // remove any verbosity flag
-    LogSuccess("Log System", "system terminated");
+    LogSuccess("Log System", "System Terminated");
     verbosityFlags = 0;
 }
 
