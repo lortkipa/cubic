@@ -50,7 +50,7 @@ void DestroyStackAllocator(StackAllocator* p_allocator)
     p_allocator->topMarker = 0;
 }
 
-StackAllocatorMarker GetMarker(const StackAllocator* p_allocator)
+StackAllocatorMarker GetStackAllocatorMarker(const StackAllocator* p_allocator)
 {
     // check for valid allocator
     Assert("Stack Allocator", p_allocator != null, "Invalid Allocator Provided");

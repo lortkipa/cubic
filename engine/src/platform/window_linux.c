@@ -6,6 +6,7 @@
 #include "platform/window_linux.h"
 #include "core/logger.h"
 #include "core/assert.h"
+#include "core/event.h"
 #include <X11/Xutil.h>
 
 static bool initialized = false;
@@ -62,6 +63,10 @@ bool CreateWindow(const u16 width, const u16 height, const char* title)
     XSelectInput(window.display, window.handle, 
             KeyPressMask | KeyReleaseMask | ExposureMask | ButtonPressMask | ButtonReleaseMask);
 
+    // init exit request message
+    window.exitRequest = XInternAtom(window.display, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(window.display, window.handle, &window.exitRequest, 1);
+
     // show the window
     XMapWindow(window.display, window.handle);
 
@@ -97,6 +102,26 @@ void FireWindowEvents(void)
     {
         // get next event
         XNextEvent(window.display, &window.event);
+
+        // when window is resized, save new data in this buffer
+        XWindowAttributes attributes;
+
+        // look for events and fire them
+        switch (window.event.type) 
+        {
+            case Expose:
+                XGetWindowAttributes(window.display, window.handle, &attributes);
+                FireEvent(EVENT_TYPE_WINDOW_RESIZE);
+                SetEventArgI32(EVENT_TYPE_WINDOW_RESIZE, 0, "Width", attributes.width);
+                SetEventArgI32(EVENT_TYPE_WINDOW_RESIZE, 1, "Height", attributes.height);
+                break;
+            case ClientMessage:
+                if (window.event.xclient.data.l[0] == (u32)window.exitRequest)
+                {
+                    FireEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST);
+                }
+                break;
+        }
     }
 }
 

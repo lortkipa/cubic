@@ -14,7 +14,7 @@ StackAllocator CreateStackAllocator(const u32 size);
 
 void DestroyStackAllocator(StackAllocator* p_allocator);
 
-StackAllocatorMarker GetMarker(const StackAllocator* p_allocator);
+StackAllocatorMarker GetStackAllocatorMarker(const StackAllocator* p_allocator);
 
 void* RequestStackAllocatorMemory(StackAllocator* p_allocator, const u32 size);
 
