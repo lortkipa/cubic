@@ -73,6 +73,24 @@
   },
   {
     "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-fPIC",
+      "-Isrc",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-DDEBUG",
+      "-o",
+      "../bin/libengine.so",
+      "src/core/stack_allocator.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
+    "output": "/home/nikoloz/Cubic/bin/libengine.so"
+  },
+  {
+    "arguments": [
       "/usr/bin/clang-19",
       "-cc1",
       "-triple",
@@ -135,12 +153,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/window-4c303b.o",
+      "/tmp/window-838af9.o",
       "src/platform/window.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window.c",
-    "output": "/tmp/window-4c303b.o"
+    "output": "/tmp/window-838af9.o"
   },
   {
     "arguments": [
@@ -206,12 +224,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/memory-65ac08.o",
+      "/tmp/memory-199916.o",
       "src/core/memory.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/memory.c",
-    "output": "/tmp/memory-65ac08.o"
+    "output": "/tmp/memory-199916.o"
   },
   {
     "arguments": [
@@ -277,12 +295,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/logger-ef11a5.o",
+      "/tmp/logger-0ae26d.o",
       "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
-    "output": "/tmp/logger-ef11a5.o"
+    "output": "/tmp/logger-0ae26d.o"
   },
   {
     "arguments": [
@@ -348,11 +366,82 @@
       "-x",
       "c",
       "-o",
-      "/tmp/assert-c511b6.o",
+      "/tmp/assert-991dad.o",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/assert.c",
-    "output": "/tmp/assert-c511b6.o"
+    "output": "/tmp/assert-991dad.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-19",
+      "-cc1",
+      "-triple",
+      "x86_64-pc-linux-gnu",
+      "-emit-obj",
+      "-dumpdir",
+      "../bin/libengine.so-",
+      "-disable-free",
+      "-clear-ast-before-backend",
+      "-disable-llvm-verifier",
+      "-discard-value-names",
+      "-main-file-name",
+      "-mrelocation-model",
+      "pic",
+      "-pic-level",
+      "2",
+      "-fhalf-no-semantic-interposition",
+      "-mframe-pointer=all",
+      "-fmath-errno",
+      "-ffp-contract=on",
+      "-fno-rounding-math",
+      "-mconstructor-aliases",
+      "-funwind-tables=2",
+      "-target-cpu",
+      "x86-64",
+      "-tune-cpu",
+      "generic",
+      "-debug-info-kind=constructor",
+      "-dwarf-version=5",
+      "-debugger-tuning=gdb",
+      "-fdebug-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-fcoverage-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-resource-dir",
+      "/usr/lib/clang/19",
+      "-I",
+      "src",
+      "-D",
+      "DEBUG",
+      "-internal-isystem",
+      "/usr/lib/clang/19/include",
+      "-internal-isystem",
+      "/usr/local/include",
+      "-internal-isystem",
+      "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.1.1/../../../../x86_64-pc-linux-gnu/include",
+      "-internal-externc-isystem",
+      "/include",
+      "-internal-externc-isystem",
+      "/usr/include",
+      "-Wall",
+      "-Wextra",
+      "-ferror-limit",
+      "19",
+      "-stack-protector",
+      "2",
+      "-fgnuc-version=4.2.1",
+      "-fskip-odr-check-in-gmf",
+      "-fcolor-diagnostics",
+      "-faddrsig",
+      "-D__GCC_HAVE_DWARF2_CFI_ASM=1",
+      "-x",
+      "c",
+      "-o",
+      "/tmp/stack_allocator-38b4b1.o",
+      "src/core/stack_allocator.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
+    "output": "/tmp/stack_allocator-38b4b1.o"
   }
 ]
