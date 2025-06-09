@@ -1,0 +1,21 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-fPIC",
+      "-Isrc",
+      "-g",
+      "-DDEBUG",
+      "-O0",
+      "-o",
+      "../bin/libengine.so",
+      "src/core/logger.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
+    "output": "/home/nikoloz/Cubic/bin/libengine.so"
+  }
+]
