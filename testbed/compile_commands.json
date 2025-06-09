@@ -1,0 +1,21 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Isrc",
+      "-I../engine/src",
+      "-g",
+      "-DDEBUG",
+      "-o0",
+      "-o",
+      "../bin/testbed",
+      "src/main.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/game",
+    "file": "/home/nikoloz/Cubic/game/src/main.c",
+    "output": "/home/nikoloz/Cubic/bin/testbed"
+  }
+]
