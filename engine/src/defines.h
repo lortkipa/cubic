@@ -40,3 +40,7 @@ typedef uint_fast64_t fu64;
 #else
     #error Platform Running On Unsuported Platform!
 #endif
+
+/*--------------------log messages--------------------*/
+#define SYSTEM_INITIALIZED_MESSAGE "System Initialized"
+#define SYSTEM_TERMINATED_MESSAGE "System Terminated"
