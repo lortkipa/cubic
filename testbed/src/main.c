@@ -13,14 +13,14 @@ void onCloseRequest(const Event* p_event)
 void onResize(const Event* p_event)
 {
     LogInfo("Game", "Window Resized %dx%d",
-            GetEventArgI32(p_event, "Width"),
-            GetEventArgI32(p_event, "Height")
+            GetEventArg(p_event, "Width").asI32,
+            GetEventArg(p_event, "Height").asI32
             );
 }
 
 void onPress(const Event* p_event)
 {
-    LogInfo("Game", "Key Pressed %d", GetEventArgI32(p_event, "Key"));
+    LogInfo("Game", "Key Pressed %d", GetEventArg(p_event, "Key").asI32);
 }
 
 int main(void)
@@ -34,14 +34,19 @@ int main(void)
     SubToEvent(EVENT_TYPE_KEY_PRESS, onPress);
     CreateWindow(1000, 800, "Cubic Game");
 
+    // game loop
     while (isRunning)
     {
+        // poll & process events
         FireWindowEvents();
         ProcessEvents();
     }
 
     // shutdown systems
     DestroyWindow();
+    UnsubToEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST, onCloseRequest);
+    UnsubToEvent(EVENT_TYPE_WINDOW_RESIZE, onResize);
+    UnsubToEvent(EVENT_TYPE_KEY_PRESS, onPress);
     ShutdownEventSystem();
     ShutdownMemorySystem();
     ShutdownLogSystem();

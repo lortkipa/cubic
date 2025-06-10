@@ -13,13 +13,16 @@
 #define MAX_EVENT_TYPE_LENGTH 20
 #define MAX_EVENT_ARG_KEY_LENGTH 10
 
+typedef union EventArgValue {
+    i32 asI32;
+    u32 asu32;
+    f32 asF32;
+    char asChar;
+} EventArgValue;
+
 typedef struct EventArg {
     char* key;
-    union {
-        i32 asI32;
-        f32 asF32;
-        char asChar;
-    } value;
+    EventArgValue value;
 } EventArg;
 
 typedef struct Event {
@@ -42,8 +45,14 @@ EXPORT void ProcessEvents(void);
 
 EXPORT void SubToEvent(const char* type, EventCallback callback);
 
+EXPORT void UnsubToEvent(const char* type, EventCallback callback);
+
 EXPORT void FireEvent(const char* type);
 
 EXPORT void SetEventArgI32(const char* type, const u32 index, const char* key, const i32 value);
 
-EXPORT i32 GetEventArgI32(const Event* p_event, const char* key);
+EXPORT void SetEventArgF32(const char* type, const u32 index, const char* key, const f32 value);
+
+EXPORT void SetEventArg(const char* type, const u32 index, const char* key, const EventArgValue value);
+
+EXPORT EventArgValue GetEventArg(const Event* p_event, const char* key);

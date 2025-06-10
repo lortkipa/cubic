@@ -120,6 +120,36 @@ void SubToEvent(const char* type, EventCallback callback)
     eventSubCount++;
 }
 
+void UnsubToEvent(const char* type, EventCallback callback)
+{
+    // check params for invalid pointers
+    Assert(CHANNEL, type != null, "Invalid Pointer Provided");
+    Assert(CHANNEL, callback != null, "Invalid Pointer Provided");
+
+    // make sure type is not longer than normal
+    Assert(CHANNEL, strlen(type) < MAX_EVENT_TYPE_LENGTH, "Too Large String Provieded");
+
+    // loop thro event subs
+    for (fu16 i = 0; i < eventSubCount; i++)
+    {
+        // check if types muches
+        if (strcmp(eventSubs[i].type, type) == 0)
+        {
+            // remove sub from array
+            for (fu16 j = i; j < eventSubCount - 1; j++)
+            {
+                eventSubs[j] = eventSubs[j + 1];
+            }
+
+            // resize array
+            eventSubCount--;
+
+            // exit function
+            return;
+        }
+    }
+}
+
 void FireEvent(const char* type)
 {
     // check params for invalid pointesr
@@ -162,7 +192,37 @@ void SetEventArgI32(const char* type, const u32 index, const char* key, const i3
     }
 }
 
-EXPORT i32 GetEventArgI32(const Event* p_event, const char* key)
+void SetEventArg(const char* type, const u32 index, const char* key, const EventArgValue value)
+{
+    // check params for invalid pointers
+    Assert(CHANNEL, type != null, "Invalid String Provided");
+    Assert(CHANNEL, key != null, "Invalid String Provided");
+
+    // make sure correct index is provieded
+    Assert(CHANNEL, index < MAX_EVENT_ARG_COUNT, "Invalid Event Arg Index Provided");
+
+    // loop thro events
+    for (fu16 i = 0; i < eventCount; i++)
+    {
+        // check if types much
+        if (strcmp(events[i].type, type) == 0)
+        {
+            // set key
+            strcpy(events[i].args[index].key, key);
+
+            // set value
+            events[i].args[index].value = value;
+
+            // exit function
+            return;
+        }
+    }
+
+    // if code comes here, event was not found
+    LogWarning(CHANNEL, "Event \"%s\" Not Found To Set Value", type);
+}
+
+EventArgValue GetEventArg(const Event* p_event, const char* key)
 {
     // check params for invalid pointers
     Assert(CHANNEL, p_event != null, "Invalid Pointer Provided");
@@ -174,11 +234,11 @@ EXPORT i32 GetEventArgI32(const Event* p_event, const char* key)
         // if keys much, return value
         if (strcmp(p_event->args[i].key, key) == 0)
         {
-            return p_event->args[i].value.asI32;
+            return p_event->args[i].value;
         }
     }
 
     // return 0 as default
     LogWarning(CHANNEL, "Either Event Type Or Argument Is Not Found");
-    return 0;
+    return (EventArgValue){0};
 }

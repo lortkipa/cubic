@@ -178,12 +178,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/window_linux-3d4be2.o",
+      "/tmp/window_linux-c3748f.o",
       "src/platform/window_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window_linux.c",
-    "output": "/tmp/window_linux-3d4be2.o"
+    "output": "/tmp/window_linux-c3748f.o"
   },
   {
     "arguments": [
@@ -250,12 +250,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/event-002a01.o",
+      "/tmp/event-0a778e.o",
       "src/core/event.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/event.c",
-    "output": "/tmp/event-002a01.o"
+    "output": "/tmp/event-0a778e.o"
   },
   {
     "arguments": [
@@ -322,12 +322,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/memory-2c4b32.o",
+      "/tmp/memory-85f0d3.o",
       "src/core/memory.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/memory.c",
-    "output": "/tmp/memory-2c4b32.o"
+    "output": "/tmp/memory-85f0d3.o"
   },
   {
     "arguments": [
@@ -394,12 +394,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/logger-4f9434.o",
+      "/tmp/logger-29db58.o",
       "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
-    "output": "/tmp/logger-4f9434.o"
+    "output": "/tmp/logger-29db58.o"
   },
   {
     "arguments": [
@@ -466,12 +466,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/assert-d8e604.o",
+      "/tmp/assert-1b227e.o",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/assert.c",
-    "output": "/tmp/assert-d8e604.o"
+    "output": "/tmp/assert-1b227e.o"
   },
   {
     "arguments": [
@@ -538,11 +538,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/stack_allocator-dfc23b.o",
+      "/tmp/stack_allocator-76bc64.o",
       "src/core/stack_allocator.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
-    "output": "/tmp/stack_allocator-dfc23b.o"
+    "output": "/tmp/stack_allocator-76bc64.o"
   }
 ]
