@@ -1,6 +1,6 @@
 COMPILER = clang
 SOURCES = $(shell find src -name *.c)
-LIBRARIES = 
+LIBRARIES = -lX11
 FLAGS = -Wall -Wextra -fPIC -shared -Isrc
 RELEASE_FLAGS = -O3
 DEBUG_FLAGS = -g -DDEBUG -O0
