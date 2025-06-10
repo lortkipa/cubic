@@ -2,7 +2,7 @@
 #include "defines.h"
 #include <stdio.h>
 
-#define CHANNEL "Log System"
+#define CHANNEL "Logger"
 
 static u8 verbosityFlags = 0;
 

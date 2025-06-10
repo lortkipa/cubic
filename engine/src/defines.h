@@ -43,4 +43,6 @@ typedef uint_fast64_t fu64;
 
 /*--------------------log messages--------------------*/
 #define SYSTEM_INITIALIZED_MESSAGE "System Initialized"
+#define SYSTEM_NOT_INITIALIZED_MESSAGE "System Not Initialized"
 #define SYSTEM_TERMINATED_MESSAGE "System Terminated"
+#define SYSTEM_NOT_TERMINATED_MESSAGE "System Not Terminated"
