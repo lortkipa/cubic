@@ -101,6 +101,16 @@ void ProcessEvents(void)
     eventCount = 0;
 }
 
+u16 GetEventCount(void)
+{
+    return eventCount;
+}
+
+u16 GetEventSubCount(void)
+{
+    return eventSubCount;
+}
+
 void SubToEvent(const char* type, EventCallback callback)
 {
     // check params for invalid pointers

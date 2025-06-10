@@ -43,6 +43,10 @@ EXPORT void ShutdownEventSystem(void);
 
 EXPORT void ProcessEvents(void);
 
+EXPORT u16 GetEventCount(void);
+
+EXPORT u16 GetEventSubCount(void);
+
 EXPORT void SubToEvent(const char* type, EventCallback callback);
 
 EXPORT void UnsubToEvent(const char* type, EventCallback callback);
