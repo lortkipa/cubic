@@ -2,6 +2,7 @@
 #include <core/memory.h>
 #include <core/event.h>
 #include <platform/window.h>
+#include <renderer/renderer.h>
 
 static b8 isRunning = true;
 
@@ -33,6 +34,7 @@ int main(void)
     SubToEvent(EVENT_TYPE_WINDOW_RESIZE, onResize);
     SubToEvent(EVENT_TYPE_KEY_PRESS, onPress);
     CreateWindow(1000, 800, "Cubic Game");
+    StartupEngine();
 
     // game loop
     while (isRunning)
@@ -43,6 +45,7 @@ int main(void)
     }
 
     // shutdown systems
+    ShutdownEngine();
     DestroyWindow();
     UnsubToEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST, onCloseRequest);
     UnsubToEvent(EVENT_TYPE_WINDOW_RESIZE, onResize);
