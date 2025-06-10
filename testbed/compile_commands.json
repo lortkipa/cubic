@@ -7,7 +7,9 @@
       "-Wextra",
       "-Isrc",
       "-I../engine/src",
-      "-O3",
+      "-g",
+      "-DDEBUG",
+      "-O0",
       "-o",
       "../bin/testbed",
       "src/main.c"

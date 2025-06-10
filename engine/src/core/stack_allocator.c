@@ -25,7 +25,7 @@ b8 CreateStackAllocator(StackAllocator* p_allocator, const u32 size)
 
     // init attributes
     p_allocator->size = size;
-    p_allocator->marker = 0;
+    p_allocator->used = 0;
 
     // return success as default
     LogSuccess(CHANNEL, "Allocator Created");
@@ -44,7 +44,7 @@ void DestroyStackAllocator(StackAllocator* p_allocator)
 
     // zero out stuff
     p_allocator->memory = null;
-    p_allocator->marker = 0;
+    p_allocator->used = 0;
     p_allocator->size = 0;
 }
 
@@ -58,13 +58,13 @@ void* RequestStackAllocatorMemory(StackAllocator* p_allocator, const u32 size)
     Assert(CHANNEL, size > 0, "Invalid Size Provieded");
     
     // make sure allocator is able to allocate that much memory
-    Assert(CHANNEL, size <= (p_allocator->size - p_allocator->marker), "Too Much Memory Requested");
+    Assert(CHANNEL, size <= (p_allocator->size - p_allocator->used), "Too Much Memory Requested");
 
     // move marker
-    p_allocator->marker += size;
+    p_allocator->used += size;
 
     // return requested memory
-    return (char*)p_allocator->memory + p_allocator->marker - size;
+    return (char*)p_allocator->memory + p_allocator->used - size;
 }
 
 void FreeStackAllocatorMemory(StackAllocator* p_allocator, const u32 size)
@@ -77,8 +77,8 @@ void FreeStackAllocatorMemory(StackAllocator* p_allocator, const u32 size)
     Assert(CHANNEL, size > 0, "Invalid Size Provided");
     
     // make sure allocator is able to free that much memory
-    Assert(CHANNEL, size <= (p_allocator->size - p_allocator->marker), "Too Much Memory Requested");
+    Assert(CHANNEL, size <= (p_allocator->size - p_allocator->used), "Too Much Memory Requested");
 
     // move marker
-    p_allocator->marker -= size;
+    p_allocator->used -= size;
 }

@@ -7,7 +7,9 @@
       "-Wextra",
       "-fPIC",
       "-Isrc",
-      "-O3",
+      "-g",
+      "-DDEBUG",
+      "-O0",
       "-o",
       "../bin/libengine.so",
       "src/core/memory.c"
@@ -24,7 +26,9 @@
       "-Wextra",
       "-fPIC",
       "-Isrc",
-      "-O3",
+      "-g",
+      "-DDEBUG",
+      "-O0",
       "-o",
       "../bin/libengine.so",
       "src/core/logger.c"
@@ -41,7 +45,9 @@
       "-Wextra",
       "-fPIC",
       "-Isrc",
-      "-O3",
+      "-g",
+      "-DDEBUG",
+      "-O0",
       "-o",
       "../bin/libengine.so",
       "src/core/assert.c"
@@ -58,7 +64,9 @@
       "-Wextra",
       "-fPIC",
       "-Isrc",
-      "-O3",
+      "-g",
+      "-DDEBUG",
+      "-O0",
       "-o",
       "../bin/libengine.so",
       "src/core/stack_allocator.c"

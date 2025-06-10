@@ -4,7 +4,7 @@
 
 typedef struct StackAllocator {
     u32 size;
-    u32 marker;
+    u32 used;
     void* memory;
 } StackAllocator;
 
