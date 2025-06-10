@@ -7,7 +7,10 @@
 
 #define CHANNEL "Event System"
 
+static b8 initialized = false;
+
 static StackAllocator allocator;
+
 static Event* events;
 static u16 eventCount = 0;
 static EventSub* eventSubs;
@@ -15,6 +18,9 @@ static u16 eventSubCount = 0;
 
 b8 StartupEventSystem(void)
 {
+    // make sure system is not started
+    Assert(CHANNEL, initialized == false, "System Is Already Initialized");
+
     // create stack allocator and check for errors
     if (
             !CreateStackAllocator
@@ -62,13 +68,19 @@ b8 StartupEventSystem(void)
     eventCount = 0;
     eventSubCount = 0;
 
-    // return success
+    // track system startup
+    initialized = true;
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
+
+    // return success
     return true;
 }
 
 void ShutdownEventSystem(void)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // zero out array lengths
     eventCount = 0;
     eventSubCount = 0;
@@ -76,12 +88,16 @@ void ShutdownEventSystem(void)
     // destroy stack allocator
     DestroyStackAllocator(&allocator);
 
-    // destroy stack allocator
+    // track system shutdown
+    initialized = false;
     LogSuccess(CHANNEL, SYSTEM_TERMINATED_MESSAGE);
 }
 
 void ProcessEvents(void)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // loop thro event subs
     for (fu16 i = 0; i < eventSubCount; i++)
     {
@@ -103,16 +119,25 @@ void ProcessEvents(void)
 
 u16 GetEventCount(void)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     return eventCount;
 }
 
 u16 GetEventSubCount(void)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     return eventSubCount;
 }
 
 void SubToEvent(const char* type, EventCallback callback)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // check params for invalid pointers
     Assert(CHANNEL, type != null, "Invalid Pointer Provided");
     Assert(CHANNEL, callback != null, "Invalid Pointer Provided");
@@ -132,6 +157,9 @@ void SubToEvent(const char* type, EventCallback callback)
 
 void UnsubToEvent(const char* type, EventCallback callback)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // check params for invalid pointers
     Assert(CHANNEL, type != null, "Invalid Pointer Provided");
     Assert(CHANNEL, callback != null, "Invalid Pointer Provided");
@@ -162,6 +190,9 @@ void UnsubToEvent(const char* type, EventCallback callback)
 
 void FireEvent(const char* type)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // check params for invalid pointesr
     Assert(CHANNEL, type != null, "Invalid Pointer Provided");
 
@@ -177,6 +208,9 @@ void FireEvent(const char* type)
 
 void SetEventArgI32(const char* type, const u32 index, const char* key, const i32 value)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // check params for invalid pointers
     Assert(CHANNEL, type != null, "Invalid String Provided");
     Assert(CHANNEL, key != null, "Invalid String Provided");
@@ -204,6 +238,9 @@ void SetEventArgI32(const char* type, const u32 index, const char* key, const i3
 
 void SetEventArg(const char* type, const u32 index, const char* key, const EventArgValue value)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // check params for invalid pointers
     Assert(CHANNEL, type != null, "Invalid String Provided");
     Assert(CHANNEL, key != null, "Invalid String Provided");
@@ -234,6 +271,9 @@ void SetEventArg(const char* type, const u32 index, const char* key, const Event
 
 EventArgValue GetEventArg(const Event* p_event, const char* key)
 {
+    // make sure system is started
+    Assert(CHANNEL, initialized == true, "System Is not Initialized Yet");
+
     // check params for invalid pointers
     Assert(CHANNEL, p_event != null, "Invalid Pointer Provided");
     Assert(CHANNEL, key != null, "Invalid String Provided");
