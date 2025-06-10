@@ -40,7 +40,8 @@ void DestroyStackAllocator(StackAllocator* p_allocator)
 
     // free memory
     FreeMemory(p_allocator->memory, p_allocator->size);
-    LogSuccess(CHANNEL, "Allocator Destroyed With Size %dB", p_allocator->size);
+    LogSuccess(CHANNEL, "Allocator Destroyed {Size: %dB, Used: %dB}",
+            p_allocator->size, p_allocator->used);
 
     // zero out stuff
     p_allocator->memory = null;

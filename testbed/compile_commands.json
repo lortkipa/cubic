@@ -20,7 +20,7 @@
   },
   {
     "arguments": [
-      "/usr/bin/clang-19",
+      "/usr/bin/clang-20",
       "-cc1",
       "-triple",
       "x86_64-pc-linux-gnu",
@@ -53,7 +53,7 @@
       "-fdebug-compilation-dir=/home/nikoloz/Cubic/testbed",
       "-fcoverage-compilation-dir=/home/nikoloz/Cubic/testbed",
       "-resource-dir",
-      "/usr/lib/clang/19",
+      "/usr/lib/clang/20",
       "-I",
       "src",
       "-I",
@@ -61,7 +61,7 @@
       "-D",
       "DEBUG",
       "-internal-isystem",
-      "/usr/lib/clang/19/include",
+      "/usr/lib/clang/20/include",
       "-internal-isystem",
       "/usr/local/include",
       "-internal-isystem",
@@ -85,11 +85,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/main-2da134.o",
+      "/tmp/main-b2c71d.o",
       "src/main.c"
     ],
     "directory": "/home/nikoloz/Cubic/testbed",
     "file": "/home/nikoloz/Cubic/testbed/src/main.c",
-    "output": "/tmp/main-2da134.o"
+    "output": "/tmp/main-b2c71d.o"
   }
 ]

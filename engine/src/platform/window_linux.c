@@ -8,6 +8,7 @@
 #include "core/assert.h"
 #include "core/logger.h"
 #include "core/memory.h"
+#include "core/event.h"
 #include <X11/Xutil.h>
 
 static LinuxWindow* window = null;
@@ -15,7 +16,7 @@ static LinuxWindow* window = null;
 EXPORT b8 CreateWindow(const u16 width, const u16 height, const char* title)
 {
     // allocate structure on heap
-    window = AllocateMemory(sizeof(Window));
+    window = AllocateMemory(sizeof(LinuxWindow));
 
     // check if singleton was allocated
     if (!window)
@@ -85,9 +86,12 @@ EXPORT void DestroyWindow(void)
     // destroy window
     XDestroyWindow(window->display, window->handle);
     LogSuccess(CHANNEL, "Window Destroyed");
-
+    
     // destroy display
     XCloseDisplay(window->display);
+    
+    // free allocated memory
+    FreeMemory(window, sizeof(LinuxWindow));
 }
 
 EXPORT void FireWindowEvents(void)
@@ -97,6 +101,34 @@ EXPORT void FireWindowEvents(void)
     {
         // get next event
         XNextEvent(window->display, &window->event);
+
+        // if window resized, store updated size here
+        XWindowAttributes attributes;
+
+        // look at events and fire them
+        switch (window->event.type) 
+        {
+            case KeyPress:
+                FireEvent(EVENT_TYPE_KEY_PRESS);
+                SetEventArgI32(EVENT_TYPE_KEY_PRESS, 0, "Key", window->event.xkey.keycode);
+                break;
+            case KeyRelease:
+                FireEvent(EVENT_TYPE_KEY_RELEASE);
+                SetEventArgI32(EVENT_TYPE_KEY_RELEASE, 0, "Key", window->event.xkey.keycode);
+                break;
+            case Expose:
+                XGetWindowAttributes(window->display, window->handle, &attributes);
+                FireEvent(EVENT_TYPE_WINDOW_RESIZE);
+                SetEventArgI32(EVENT_TYPE_WINDOW_RESIZE, 0, "Width", attributes.width);
+                SetEventArgI32(EVENT_TYPE_WINDOW_RESIZE, 1, "Height", attributes.height);
+                break;
+            case ClientMessage:
+                if (window->event.xclient.data.l[0] == (u32)window->exitRequest)
+                {
+                    FireEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST);
+                }
+                break;
+        }
     }
 }
 
