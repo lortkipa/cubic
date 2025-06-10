@@ -1,4 +1,4 @@
-COMPILER = gcc
+COMPILER = clang
 SOURCES = $(shell find src -name *.c)
 LIBRARIES = -lengine
 FLAGS = -Wall -Wextra -Isrc -I../engine/src -L../bin

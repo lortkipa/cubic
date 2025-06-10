@@ -9,9 +9,9 @@ typedef struct MemoryTracker {
     u32 usage;
 } MemoryTracker;
 
-b8 StartupMemorySystem(void);
+EXPORT b8 StartupMemorySystem(void);
 
-void ShutdownMemorySystem(void);
+EXPORT void ShutdownMemorySystem(void);
 
 void* AllocateMemory(const u32 size);
 

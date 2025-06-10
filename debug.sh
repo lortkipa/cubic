@@ -1,9 +1,9 @@
 cd engine
-bear -- make debug
-make debug
+bear -- make -f linux.mk debug
+make -f linux.mk debug
 cd ..
 cd testbed
-bear -- make debug
-make debug
-make run
+bear -- make -f linux.mk debug
+make -f linux.mk debug
+make -f linux.mk run
 cd ..

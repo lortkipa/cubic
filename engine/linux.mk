@@ -1,4 +1,4 @@
-COMPILER = gcc
+COMPILER = clang
 SOURCES = $(shell find src -name *.c)
 LIBRARIES = 
 FLAGS = -Wall -Wextra -fPIC -shared -Isrc

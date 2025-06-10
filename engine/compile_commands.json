@@ -1,7 +1,7 @@
 [
   {
     "arguments": [
-      "/usr/bin/gcc",
+      "/usr/bin/clang",
       "-c",
       "-Wall",
       "-Wextra",
@@ -20,7 +20,7 @@
   },
   {
     "arguments": [
-      "/usr/bin/gcc",
+      "/usr/bin/clang",
       "-c",
       "-Wall",
       "-Wextra",
@@ -39,17 +39,16 @@
   },
   {
     "arguments": [
-      "/usr/bin/gcc",
+      "/usr/bin/clang",
       "-c",
       "-Wall",
       "-Wextra",
-      "-fPIC",
       "-Isrc",
       "-g",
       "-DDEBUG",
       "-O0",
       "-o",
-      "../bin/libengine.so",
+      "../bin/engine.dll",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
@@ -58,7 +57,7 @@
   },
   {
     "arguments": [
-      "/usr/bin/gcc",
+      "/usr/bin/clang",
       "-c",
       "-Wall",
       "-Wextra",

@@ -1,9 +1,9 @@
 cd engine
-bear -- make release
-make release
+bear -- make -f linux.mk release
+make -f linux.mk release
 cd ..
 cd testbed
-bear -- make release
-make release
-make run
+bear -- make -f linux.mk release
+make -f linux.mk release
+make -f linux.mk run
 cd ..

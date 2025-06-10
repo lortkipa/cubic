@@ -15,9 +15,9 @@ typedef enum LogVerbosity {
     LOG_VERBOSITY_INFO
 } LogVerbosity;
 
-b8 StartupLogSystem(const u8 flags);
+EXPORT b8 StartupLogSystem(const u8 flags);
 
-void ShutdownLogSystem(void);
+EXPORT void ShutdownLogSystem(void);
 
 u8 GetLogVerbosityFlag(const LogVerbosity verbosity);
 

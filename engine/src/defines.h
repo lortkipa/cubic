@@ -41,6 +41,13 @@ typedef uint_fast64_t fu64;
     #error Platform Running On Unsuported Platform!
 #endif
 
+/*--------------------export/import--------------------*/
+#if defined(PLATFORM_WINDOWS)
+    #define EXPORT __declspec(dllexport)
+#else
+    #define EXPORT 
+#endif
+
 /*--------------------log messages--------------------*/
 #define SYSTEM_INITIALIZED_MESSAGE "System Initialized"
 #define SYSTEM_NOT_INITIALIZED_MESSAGE "System Not Initialized"
