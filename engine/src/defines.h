@@ -48,6 +48,9 @@ typedef uint_fast64_t fu64;
     #define EXPORT 
 #endif
 
+/*--------------------other--------------------*/
+#define auto __auto_type
+
 /*--------------------log messages--------------------*/
 #define SYSTEM_INITIALIZED_MESSAGE "System Initialized"
 #define SYSTEM_NOT_INITIALIZED_MESSAGE "System Not Initialized"

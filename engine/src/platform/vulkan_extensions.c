@@ -3,7 +3,7 @@
 
 #define CHANNEL "Vulkan Extension Manager"
 
-const char** GetRequiredVKInstanceExtensions(u8* p_count)
+const char** GetRequiredVKInstanceExtensions(u8* p_count, const b8 enableDebugUtils)
 {
 #if defined(PLATFORM_LINUX)
 
@@ -11,7 +11,8 @@ const char** GetRequiredVKInstanceExtensions(u8* p_count)
     static const char* extensions[] = 
     {
         "VK_KHR_surface",
-        "VK_KHR_xlib_surface"
+        "VK_KHR_xlib_surface",
+        "VK_EXT_debug_utils"
     };
 
 #elif defined(PLATFORM_WINDOWS)
@@ -20,7 +21,8 @@ const char** GetRequiredVKInstanceExtensions(u8* p_count)
     static const char* extensions[] = 
     {
         "VK_KHR_surface",
-        "VK_KHR_win32_surface"
+        "VK_KHR_win32_surface",
+        "VK_EXT_debug_utils"
     };
    
 
@@ -35,6 +37,12 @@ const char** GetRequiredVKInstanceExtensions(u8* p_count)
 
     // get and asign size
     *p_count = sizeof(extensions) / sizeof(char*);
+
+    // if debug utils is not enabled, we have to remove last extensions, so just resize ext count
+    if (!enableDebugUtils)
+    {
+        (*p_count)--;
+    }
 
     // return extensions
     return extensions;
