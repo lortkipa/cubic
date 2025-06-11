@@ -234,6 +234,13 @@ b8 StartupVKRenderer(void)
                     graphicsQueueFamilyFound = true;
                     LogInfo(CHANNEL, "Graphics Queue Family Found At Index: %d", j);
                 }
+
+                // save family indinces and exit the loop, if all indinces are found
+                if (graphicsQueueFamilyFound)
+                {
+                    renderer->queueFamilyIndinces.graphicsFamily = i;
+                    break;
+                }
             }
 
             // free queue families from heap
@@ -260,6 +267,38 @@ b8 StartupVKRenderer(void)
 
     }
 
+    // create logical device
+    {
+        // logical device queue info
+        VkDeviceQueueCreateInfo logicalDeviceQueueInfo = {};
+        logicalDeviceQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        logicalDeviceQueueInfo.queueFamilyIndex = renderer->queueFamilyIndinces.graphicsFamily;
+        logicalDeviceQueueInfo.queueCount = 1;
+        float queuePriority = 1.0f;
+        logicalDeviceQueueInfo.pQueuePriorities = &queuePriority;
+
+        // set app features
+        VkPhysicalDeviceFeatures rendererFeatures = {};
+
+        // logical device info
+        VkDeviceCreateInfo logicalDeviceInfo = {};
+        logicalDeviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        logicalDeviceInfo.pQueueCreateInfos = &logicalDeviceQueueInfo;
+        logicalDeviceInfo.queueCreateInfoCount = 1;
+        logicalDeviceInfo.pEnabledFeatures = &rendererFeatures;
+
+        // create logical device
+        VkResult result = vkCreateDevice(renderer->physicalDevice, &logicalDeviceInfo, null, &renderer->logicalDevice);
+
+        // check for errors
+        if (result != VK_SUCCESS)
+        {
+            LogError(CHANNEL, "Logical Device Not Created");
+            return 0;
+        }
+        LogSuccess(CHANNEL, "Logical Device Created");
+    }
+
     // if code comes here, return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
     return true;
@@ -267,6 +306,10 @@ b8 StartupVKRenderer(void)
 
 void ShutdownVKRenderer(void)
 {
+    // destroy logical device
+    vkDestroyDevice(renderer->logicalDevice, null);
+    LogSuccess(CHANNEL, "Logical Device Destroyed");
+
     // destroy messenger if it was created
 #if defined(DEBUG)
 

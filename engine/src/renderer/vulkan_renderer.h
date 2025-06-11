@@ -4,9 +4,14 @@
 
 #include <vulkan/vulkan.h>
 
+typedef struct VKQueueFamilyIndinces {
+    i32 graphicsFamily;
+} VKQueueFamilyIndinces;
+
 typedef struct VKRenderer {
     VkInstance instance;
     VkDebugUtilsMessengerEXT messenger;
+    VKQueueFamilyIndinces queueFamilyIndinces;
     VkPhysicalDevice physicalDevice;
     VkDevice logicalDevice;
     VkSurfaceKHR surface;
