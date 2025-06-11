@@ -1,7 +1,8 @@
-#include "platform/vulkan_extensions.h"
+#include "platform/vulkan_platform.h"
+#include "platform/window_linux.h"
 #include "core/logger.h"
 
-#define CHANNEL "Vulkan Extension Manager"
+#define CHANNEL "Vulkan Platform"
 
 const char** GetRequiredVKInstanceExtensions(u8* p_count, const b8 enableDebugUtils)
 {
@@ -46,4 +47,22 @@ const char** GetRequiredVKInstanceExtensions(u8* p_count, const b8 enableDebugUt
 
     // return extensions
     return extensions;
+}
+
+VkResult CreateVKSurface(VKRenderer* p_renderer)
+{
+#if defined(PLATFORM_LINUX)
+
+    // linux surface info
+    VkXlibSurfaceCreateInfoKHR surfaceInfo = {};
+    surfaceInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+    surfaceInfo.dpy = GetLinuxWindowDisplay();
+    surfaceInfo.window = GetLinuxWindowHandle();
+
+    // create surface and return result
+    return vkCreateXlibSurfaceKHR(p_renderer->instance, &surfaceInfo, null, &p_renderer->surface);
+
+#elif defined(PLATFORM_WINDOWS)
+
+#endif
 }

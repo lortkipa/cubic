@@ -69,10 +69,10 @@
       "-O0",
       "-o",
       "../bin/libengine.so",
-      "src/platform/vulkan_extensions.c"
+      "src/platform/vulkan_platform.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_extensions.c",
+    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform.c",
     "output": "/home/nikoloz/Cubic/bin/libengine.so"
   },
   {
@@ -235,12 +235,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/renderer-54e12a.o",
+      "/tmp/renderer-d0bac1.o",
       "src/renderer/renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/renderer.c",
-    "output": "/tmp/renderer-54e12a.o"
+    "output": "/tmp/renderer-d0bac1.o"
   },
   {
     "arguments": [
@@ -307,12 +307,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/vulkan_renderer-c919ac.o",
+      "/tmp/vulkan_renderer-301b74.o",
       "src/renderer/vulkan_renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/vulkan_renderer.c",
-    "output": "/tmp/vulkan_renderer-c919ac.o"
+    "output": "/tmp/vulkan_renderer-301b74.o"
   },
   {
     "arguments": [
@@ -379,12 +379,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/window_linux-07e576.o",
+      "/tmp/window_linux-f331e0.o",
       "src/platform/window_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window_linux.c",
-    "output": "/tmp/window_linux-07e576.o"
+    "output": "/tmp/window_linux-f331e0.o"
   },
   {
     "arguments": [
@@ -451,12 +451,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/vulkan_extensions-4a129b.o",
-      "src/platform/vulkan_extensions.c"
+      "/tmp/vulkan_platform-f22ebd.o",
+      "src/platform/vulkan_platform.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_extensions.c",
-    "output": "/tmp/vulkan_extensions-4a129b.o"
+    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform.c",
+    "output": "/tmp/vulkan_platform-f22ebd.o"
   },
   {
     "arguments": [
@@ -523,12 +523,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/event-ded770.o",
+      "/tmp/event-41e859.o",
       "src/core/event.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/event.c",
-    "output": "/tmp/event-ded770.o"
+    "output": "/tmp/event-41e859.o"
   },
   {
     "arguments": [
@@ -595,12 +595,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/memory-728e62.o",
+      "/tmp/memory-ca1a67.o",
       "src/core/memory.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/memory.c",
-    "output": "/tmp/memory-728e62.o"
+    "output": "/tmp/memory-ca1a67.o"
   },
   {
     "arguments": [
@@ -667,12 +667,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/logger-ba35d8.o",
+      "/tmp/logger-ce64a5.o",
       "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
-    "output": "/tmp/logger-ba35d8.o"
+    "output": "/tmp/logger-ce64a5.o"
   },
   {
     "arguments": [
@@ -739,12 +739,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/assert-f31bd8.o",
+      "/tmp/assert-54f0d0.o",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/assert.c",
-    "output": "/tmp/assert-f31bd8.o"
+    "output": "/tmp/assert-54f0d0.o"
   },
   {
     "arguments": [
@@ -811,11 +811,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/stack_allocator-20283a.o",
+      "/tmp/stack_allocator-bb903f.o",
       "src/core/stack_allocator.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
-    "output": "/tmp/stack_allocator-20283a.o"
+    "output": "/tmp/stack_allocator-bb903f.o"
   }
 ]

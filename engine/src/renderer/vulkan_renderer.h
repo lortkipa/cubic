@@ -2,6 +2,12 @@
 
 #include "defines.h"
 
+#if defined(PLATFORM_LINUX)
+    #define VK_USE_PLATFORM_XLIB_KHR
+#elif defined(PLATFORM_WINDOWS)
+    #define VK_USE_PLATFORM_WIN32_KHR
+#endif
+
 #include <vulkan/vulkan.h>
 
 typedef struct VKQueueFamilyIndinces {

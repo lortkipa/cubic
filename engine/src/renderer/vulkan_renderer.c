@@ -1,5 +1,5 @@
 #include "renderer/vulkan_renderer.h"
-#include "platform/vulkan_extensions.h"
+#include "platform/vulkan_platform.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
 
@@ -175,6 +175,20 @@ b8 StartupVKRenderer(void)
 
 #endif
 
+    // create surface
+    {
+        // create it
+        VkResult result = CreateVKSurface(renderer);
+
+        // check for errors
+        if (result != VK_SUCCESS)
+        {
+            LogError(CHANNEL, "Surface Creation Failed");
+            return false;
+        }
+        LogSuccess(CHANNEL, "Surface Created");
+    }
+
     // pick physical device (GPU)
     {
         // get physical device count
@@ -322,6 +336,10 @@ void ShutdownVKRenderer(void)
     LogSuccess(CHANNEL, "Messenger Destroyed");
 
 #endif
+
+    // destroy surface
+    vkDestroySurfaceKHR(renderer->instance, renderer->surface, null);
+    LogSuccess(CHANNEL, "Surface Destroyed");
 
     // destroy instance
     vkDestroyInstance(renderer->instance, null);
