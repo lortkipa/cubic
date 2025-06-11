@@ -238,7 +238,7 @@ b8 StartupVKRenderer(void)
                 // save family indinces and exit the loop, if all indinces are found
                 if (graphicsQueueFamilyFound)
                 {
-                    renderer->queueFamilyIndinces.graphicsFamily = i;
+                    renderer->queueFamilyIndinces.graphics = i;
                     break;
                 }
             }
@@ -272,7 +272,7 @@ b8 StartupVKRenderer(void)
         // logical device queue info
         VkDeviceQueueCreateInfo logicalDeviceQueueInfo = {};
         logicalDeviceQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        logicalDeviceQueueInfo.queueFamilyIndex = renderer->queueFamilyIndinces.graphicsFamily;
+        logicalDeviceQueueInfo.queueFamilyIndex = renderer->queueFamilyIndinces.graphics;
         logicalDeviceQueueInfo.queueCount = 1;
         float queuePriority = 1.0f;
         logicalDeviceQueueInfo.pQueuePriorities = &queuePriority;
@@ -297,6 +297,11 @@ b8 StartupVKRenderer(void)
             return 0;
         }
         LogSuccess(CHANNEL, "Logical Device Created");
+    }
+
+    // save queue handles
+    {
+        vkGetDeviceQueue(renderer->logicalDevice, renderer->queueFamilyIndinces.graphics, 0, &renderer->queueHandles.graphics);
     }
 
     // if code comes here, return success

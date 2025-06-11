@@ -5,13 +5,18 @@
 #include <vulkan/vulkan.h>
 
 typedef struct VKQueueFamilyIndinces {
-    i32 graphicsFamily;
+    i32 graphics;
 } VKQueueFamilyIndinces;
+
+typedef struct VKQueueHandles {
+    VkQueue graphics;
+} VKQueueHandles;
 
 typedef struct VKRenderer {
     VkInstance instance;
     VkDebugUtilsMessengerEXT messenger;
     VKQueueFamilyIndinces queueFamilyIndinces;
+    VKQueueHandles queueHandles;
     VkPhysicalDevice physicalDevice;
     VkDevice logicalDevice;
     VkSurfaceKHR surface;
