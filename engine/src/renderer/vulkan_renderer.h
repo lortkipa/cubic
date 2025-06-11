@@ -11,7 +11,8 @@
 #include <vulkan/vulkan.h>
 
 typedef struct VKQueueFamilyIndinces {
-    i32 graphics;
+    u32 graphics;
+    u32 present;
 } VKQueueFamilyIndinces;
 
 typedef struct VKQueueHandles {

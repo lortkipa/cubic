@@ -238,6 +238,7 @@ b8 StartupVKRenderer(void)
 
             // track if queue families are found
             b8 graphicsQueueFamilyFound = false;
+            b8 presentQueueFamilyFound = false;
 
             // loop thro queue families
             for (u32 j = 0; j < queueFamilyCount; j++)
@@ -249,8 +250,23 @@ b8 StartupVKRenderer(void)
                     LogInfo(CHANNEL, "Graphics Queue Family Found At Index: %d", j);
                 }
 
+                // try to find present family index
+                if (!presentQueueFamilyFound)
+                {
+                    // get present family queue support
+                    VkBool32 presentSupport = false;
+                    vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevices[i], i, renderer->surface, &presentSupport);
+
+                    // if present family is supported, store its index
+                    if (presentSupport)
+                    {
+                        presentQueueFamilyFound = true;
+                        renderer->queueFamilyIndinces.present = i;
+                    }
+                }
+
                 // save family indinces and exit the loop, if all indinces are found
-                if (graphicsQueueFamilyFound)
+                if (graphicsQueueFamilyFound && presentQueueFamilyFound)
                 {
                     renderer->queueFamilyIndinces.graphics = i;
                     break;
