@@ -10,10 +10,10 @@ static StackAllocator allocator;
 static VKRenderer* renderer;
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL VKDebugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* pUserData)
+        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT messageType,
+        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+        void* pUserData)
 {
     // log with verbosity depending on callback severty
     switch (messageSeverity) 
@@ -62,7 +62,7 @@ static void DestroyVKMessenger(VkInstance instance, VkDebugUtilsMessengerEXT mes
 b8 StartupVKRenderer(void)
 {
     // create allocator
-    if (!CreateStackAllocator(&allocator, 2 * sizeof(VKRenderer)))
+    if (!CreateStackAllocator(&allocator, sizeof(VKRenderer) + 1000))
     {
         LogError(CHANNEL, "Stack Allocator Creation Failed");
         return false;
@@ -174,6 +174,91 @@ b8 StartupVKRenderer(void)
     }
 
 #endif
+
+    // pick physical device (GPU)
+    {
+        // get physical device count
+        u32 physicalDeviceCount;
+        vkEnumeratePhysicalDevices(renderer->instance, &physicalDeviceCount, null);
+
+        // make sure at list 1 gpu is found
+        if (physicalDeviceCount == 0)
+        {
+            LogError(CHANNEL, "Failed To Find GPU With Vulkan Support");
+            return false;
+        }
+
+        // get physical devices
+        VkPhysicalDevice* physicalDevices = RequestStackAllocatorMemory(&allocator, physicalDeviceCount * sizeof(VkPhysicalDevice));
+        vkEnumeratePhysicalDevices(renderer->instance, &physicalDeviceCount, physicalDevices);
+
+        // in debug mode, log every physical device info
+#if defined(DEBUG)
+
+        for (u32 i = 0; i < physicalDeviceCount; i++)
+        {
+            VkPhysicalDeviceProperties properties;
+            vkGetPhysicalDeviceProperties(physicalDevices[i], &properties);
+            LogInfo(CHANNEL, "GPU Found: \"%s\"", properties.deviceName);
+        }
+
+#endif
+
+        // loop thro physical devices to pick one of them
+        renderer->physicalDevice = null;
+        for (u32 i = 0; i < physicalDeviceCount; i++)
+        {
+            // query gpu info
+            VkPhysicalDeviceProperties properties;
+            VkPhysicalDeviceFeatures features;
+            vkGetPhysicalDeviceProperties(physicalDevices[i], &properties);
+            vkGetPhysicalDeviceFeatures(physicalDevices[i], &features);
+
+            // get physical device queue family count
+            u32 queueFamilyCount;
+            vkGetPhysicalDeviceQueueFamilyProperties(physicalDevices[i], &queueFamilyCount, null);
+            
+            // get physical device queue families
+            VkQueueFamilyProperties* queueFamilies = RequestStackAllocatorMemory(&allocator, queueFamilyCount * sizeof(VkQueueFamilyProperties));
+            vkGetPhysicalDeviceQueueFamilyProperties(physicalDevices[i], &queueFamilyCount, queueFamilies);
+
+            // track if queue families are found
+            b8 graphicsQueueFamilyFound = false;
+
+            // loop thro queue families
+            for (u32 j = 0; j < queueFamilyCount; j++)
+            {
+                // try to find graphics family index
+                if (!graphicsQueueFamilyFound && (queueFamilies[j].queueFlags & VK_QUEUE_GRAPHICS_BIT))
+                {
+                    graphicsQueueFamilyFound = true;
+                    LogInfo(CHANNEL, "Graphics Queue Family Found At Index: %d", j);
+                }
+            }
+
+            // free queue families from heap
+            RequestStackAllocatorMemory(&allocator, queueFamilyCount * sizeof(VkQueueFamilyProperties));
+
+            // try to pick gpu
+            if (graphicsQueueFamilyFound && features.geometryShader)
+            {
+                LogSuccess(CHANNEL, "GPU Picked: \"%s\"", properties.deviceName);
+                renderer->physicalDevice = physicalDevices[i];
+                break;
+            }
+        }
+        
+        // release physical devices memory
+        FreeStackAllocatorMemory(&allocator, physicalDeviceCount * sizeof(VkPhysicalDevice));
+
+        // if physical device is not picked, return failure
+        if (!renderer->physicalDevice)
+        {
+            LogError(CHANNEL, "Failed To Pick Suitable GPU");
+            return 0;
+        }
+
+    }
 
     // if code comes here, return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);

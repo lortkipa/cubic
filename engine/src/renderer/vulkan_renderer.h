@@ -7,6 +7,8 @@
 typedef struct VKRenderer {
     VkInstance instance;
     VkDebugUtilsMessengerEXT messenger;
+    VkPhysicalDevice physicalDevice;
+    VkDevice logicalDevice;
     VkSurfaceKHR surface;
 } VKRenderer;
 
