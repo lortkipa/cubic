@@ -11,19 +11,6 @@ void onCloseRequest(const Event* p_event)
     isRunning = false;
 }
 
-void onResize(const Event* p_event)
-{
-    LogInfo("Game", "Window Resized %dx%d",
-            GetEventArg(p_event, "Width").asI32,
-            GetEventArg(p_event, "Height").asI32
-            );
-}
-
-void onPress(const Event* p_event)
-{
-    LogInfo("Game", "Key Pressed %d", GetEventArg(p_event, "Key").asI32);
-}
-
 int main(void)
 {
     // startup systems
@@ -31,10 +18,8 @@ int main(void)
     StartupMemorySystem();
     StartupEventSystem();
     SubToEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST, onCloseRequest);
-    SubToEvent(EVENT_TYPE_WINDOW_RESIZE, onResize);
-    SubToEvent(EVENT_TYPE_KEY_PRESS, onPress);
     CreateWindow(1000, 800, "Cubic Game");
-    StartupEngine();
+    StartupRenderer(RENDERER_BACKEND_VULKAN);
 
     // game loop
     while (isRunning)
@@ -42,14 +27,15 @@ int main(void)
         // poll & process events
         FireWindowEvents();
         ProcessEvents();
+
+        // draw on screen
+        RunRenderer();
     }
 
     // shutdown systems
-    ShutdownEngine();
+    ShutdownRenderer();
     DestroyWindow();
     UnsubToEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST, onCloseRequest);
-    UnsubToEvent(EVENT_TYPE_WINDOW_RESIZE, onResize);
-    UnsubToEvent(EVENT_TYPE_KEY_PRESS, onPress);
     ShutdownEventSystem();
     ShutdownMemorySystem();
     ShutdownLogSystem();
