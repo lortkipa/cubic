@@ -299,13 +299,21 @@ b8 StartupVKRenderer(void)
 
     // create logical device
     {
-        // logical device queue info
-        VkDeviceQueueCreateInfo logicalDeviceQueueInfo = {};
-        logicalDeviceQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        logicalDeviceQueueInfo.queueFamilyIndex = renderer->queueFamilyIndinces.graphics;
-        logicalDeviceQueueInfo.queueCount = 1;
+        // logical device queue infos
         float queuePriority = 1.0f;
-        logicalDeviceQueueInfo.pQueuePriorities = &queuePriority;
+        u8 queueInfoCount = 
+            (renderer->queueFamilyIndinces.graphics == (u32)renderer->queueFamilyIndinces.present) ? 1 : 2;
+        VkDeviceQueueCreateInfo* queueInfos = RequestStackAllocatorMemory(&allocator, queueInfoCount * sizeof(VkDeviceQueueCreateInfo));
+        for (u32 i = 0; i < queueInfoCount; i++)
+        {
+            queueInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueInfos[i].queueFamilyIndex =
+                i == 0 ? renderer->queueFamilyIndinces.graphics : renderer->queueFamilyIndinces.present;
+            queueInfos[i].queueCount = 1;
+            queueInfos[i].pQueuePriorities = &queuePriority;
+            queueInfos[i].pNext = null;
+            queueInfos[i].flags = 0;
+        }
 
         // set app features
         VkPhysicalDeviceFeatures rendererFeatures = {};
@@ -313,12 +321,15 @@ b8 StartupVKRenderer(void)
         // logical device info
         VkDeviceCreateInfo logicalDeviceInfo = {};
         logicalDeviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        logicalDeviceInfo.pQueueCreateInfos = &logicalDeviceQueueInfo;
-        logicalDeviceInfo.queueCreateInfoCount = 1;
+        logicalDeviceInfo.pQueueCreateInfos = queueInfos;
+        logicalDeviceInfo.queueCreateInfoCount = queueInfoCount;
         logicalDeviceInfo.pEnabledFeatures = &rendererFeatures;
 
         // create logical device
         VkResult result = vkCreateDevice(renderer->physicalDevice, &logicalDeviceInfo, null, &renderer->logicalDevice);
+        
+        // free queue infos from heap
+        FreeStackAllocatorMemory(&allocator, queueInfoCount * sizeof(VkDeviceQueueCreateInfo));
 
         // check for errors
         if (result != VK_SUCCESS)
@@ -331,7 +342,11 @@ b8 StartupVKRenderer(void)
 
     // save queue handles
     {
+        // graphics queue
         vkGetDeviceQueue(renderer->logicalDevice, renderer->queueFamilyIndinces.graphics, 0, &renderer->queueHandles.graphics);
+
+        // present queue
+        vkGetDeviceQueue(renderer->logicalDevice, renderer->queueFamilyIndinces.present, 0, &renderer->queueHandles.present);
     }
 
     // if code comes here, return success

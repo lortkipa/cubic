@@ -17,6 +17,7 @@ typedef struct VKQueueFamilyIndinces {
 
 typedef struct VKQueueHandles {
     VkQueue graphics;
+    VkQueue present;
 } VKQueueHandles;
 
 typedef struct VKRenderer {
