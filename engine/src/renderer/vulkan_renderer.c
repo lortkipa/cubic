@@ -2,6 +2,7 @@
 #include "platform/vulkan_platform.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
+#include <string.h>
 
 #define CHANNEL "Vulkan Renderer"
 
@@ -276,8 +277,62 @@ b8 StartupVKRenderer(void)
             // free queue families from heap
             RequestStackAllocatorMemory(&allocator, queueFamilyCount * sizeof(VkQueueFamilyProperties));
 
+            // get awailable gpu extension count
+            u32 awailableExtCount;
+            vkEnumerateDeviceExtensionProperties(physicalDevices[i], null, &awailableExtCount, null);
+
+            // get awailable gpu extensions
+            VkExtensionProperties awailableExts[awailableExtCount];
+            vkEnumerateDeviceExtensionProperties(physicalDevices[i], null, &awailableExtCount, null);
+
+            // extension that we need for application
+            const char* exts[] = 
+            {
+                VK_KHR_SWAPCHAIN_EXTENSION_NAME
+            };
+
+            // calculate needed extension count
+            u8 extCount = sizeof(exts) / sizeof(char*);
+
+            // track wich needed extension was found
+            b8 extStatuses[awailableExtCount] = {};
+
+            // loop needed extension
+            for (u8 i = 0; i < extCount; i++)
+            {
+                // loop awailable extensions
+                for (u32 j = 0; j < awailableExtCount; j++)
+                {
+                    // if extensions is found track it
+                    if (strcmp(exts[i], awailableExts[j].extensionName))
+                    {
+                        extStatuses[i] = true;
+                        LogInfo(CHANNEL, "Extension Loaded: \"%s\"", exts[i]);
+                        break;
+                    }
+                }
+            }
+            
+            // track if all needed extension is supported
+            b8 extsSupported = false;
+
+            // check if all extension is found
+            for (u8 i = 0; i < extCount; i++)
+            {
+                if (!extStatuses[i])
+                {
+                    break;
+                }
+
+                if (i == (extCount - 1) && extStatuses[i])
+                {
+                    LogInfo(CHANNEL, "All Physical Device Extension Are Supported (%d)", extCount);
+                    extsSupported = true;
+                }
+            }
+
             // try to pick gpu
-            if (graphicsQueueFamilyFound && features.geometryShader)
+            if (graphicsQueueFamilyFound && extsSupported && features.geometryShader)
             {
                 LogSuccess(CHANNEL, "GPU Picked: \"%s\"", properties.deviceName);
                 renderer->physicalDevice = physicalDevices[i];
