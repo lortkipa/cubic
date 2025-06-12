@@ -20,13 +20,6 @@ typedef struct VKQueueHandles {
     VkQueue present;
 } VKQueueHandles;
 
-typedef struct VKSwapchain {
-    VkSwapchainKHR handle;
-    VkSurfaceCapabilitiesKHR capabilities;
-    VkSurfaceFormatKHR* formats;
-    VkPresentModeKHR* presentModes;
-} VKSwapchain;
-
 typedef struct VKRenderer {
     VkInstance instance;
     VkDebugUtilsMessengerEXT messenger;
@@ -35,7 +28,7 @@ typedef struct VKRenderer {
     VkPhysicalDevice physicalDevice;
     VkDevice logicalDevice;
     VkSurfaceKHR surface;
-    VKSwapchain swapchain;
+    VkSwapchainKHR swapchain;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);

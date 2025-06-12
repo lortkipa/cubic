@@ -132,6 +132,21 @@ EXPORT void FireWindowEvents(void)
     }
 }
 
+EXPORT WindowSize GetWindowSize(void)
+{
+    // store window attributes here (temp buffer)
+    XWindowAttributes attributes;
+
+    // get window attributes
+    XGetWindowAttributes(window->display, window->handle, &attributes);
+
+    // create structure
+    WindowSize size = { attributes.width, attributes.height };
+
+    // return window size
+    return size;
+}
+
 Display* GetLinuxWindowDisplay(void)
 {
     return window->display;

@@ -1,5 +1,6 @@
 #include "renderer/vulkan_renderer.h"
 #include "platform/vulkan_platform.h"
+#include "platform/window.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
 #include <string.h>
@@ -336,19 +337,11 @@ b8 StartupVKRenderer(void)
             vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevices[i], renderer->surface, &formatCount, null);
             LogInfo(CHANNEL, "Surface Format Found: %d", formatCount);
 
-            // get formats
-            VkSurfaceFormatKHR formats[formatCount];
-            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevices[i], renderer->surface, &formatCount, formats);
-
             // get present mode count
             u32 presentModeCount;
             vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevices[i], renderer->surface, &presentModeCount, null);
             LogInfo(CHANNEL, "Surface Present Mode Found: %d", presentModeCount);
 
-            // get present modes
-            VkPresentModeKHR presentModes[presentModeCount];
-            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevices[i], renderer->surface, &presentModeCount, presentModes);
-            
             // track if swapchain is supported for this gpu
             b8 swapchainIsSupported = false;
 
@@ -433,6 +426,161 @@ b8 StartupVKRenderer(void)
         vkGetDeviceQueue(renderer->logicalDevice, renderer->queueFamilyIndinces.present, 0, &renderer->queueHandles.present);
     }
 
+    // create swapchain
+    {
+        // get format count
+        u32 formatCount;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(renderer->physicalDevice, renderer->surface, &formatCount, null);
+        LogInfo(CHANNEL, "Surface Format Found: %d", formatCount);
+
+        // get formats
+        VkSurfaceFormatKHR* formats = RequestStackAllocatorMemory(&allocator, formatCount * sizeof(VkSurfaceFormatKHR));
+        vkGetPhysicalDeviceSurfaceFormatsKHR(renderer->physicalDevice, renderer->surface, &formatCount, formats);
+
+        // store picked format here
+        VkSurfaceFormatKHR format;
+        b8 formatIsChoosen = false;
+
+        // loop formats
+        for (u32 i = 0; i < formatCount; i++)
+        {
+            // try to pick best format
+            if (formats[i].format == VK_FORMAT_B8G8R8A8_SRGB && formats[i].colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR)
+            {
+                format = formats[i];
+                formatIsChoosen = true;
+                break;
+            }
+        }
+
+        // if best format is not picked, choose first one
+        if (!formatIsChoosen)
+        {
+            format = formats[0];
+        }
+
+        // free formats array from heap
+        FreeStackAllocatorMemory(&allocator, formatCount * sizeof(VkSurfaceFormatKHR));
+
+        // get present mode count
+        u32 presentModeCount;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(renderer->physicalDevice, renderer->surface, &presentModeCount, null);
+        LogInfo(CHANNEL, "Surface Present Mode Found: %d", presentModeCount);
+
+        // get present modes
+        VkPresentModeKHR* presentModes = RequestStackAllocatorMemory(&allocator, presentModeCount * sizeof(VkPresentModeKHR));
+        vkGetPhysicalDeviceSurfacePresentModesKHR(renderer->physicalDevice, renderer->surface, &presentModeCount, presentModes);
+
+        // store picked present mode here
+        VkPresentModeKHR presentMode;
+        b8 presentModeIsChoosen = false;
+
+        // loop present modes
+        for (u32 i = 0; i < presentModeCount; i++)
+        {
+            // try to pick best present mode
+            if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
+            {
+                presentMode = presentModes[i];
+                presentModeIsChoosen = true;
+                LogInfo(CHANNEL, "Best Present Mode Choosen: \"VK_PRESENT_MODE_MAILBOX_KHR\"");
+                break;
+            }
+        }
+        
+        // if best present mode is not awailable, choose guarentieed one
+        if (!presentModeIsChoosen)
+        {
+            presentMode = VK_PRESENT_MODE_FIFO_KHR;
+            LogInfo(CHANNEL, "Present Mode Choosen: \"VK_PRESENT_MODE_FIFO_KHR\"");
+        }
+        
+        // free present modes array from heap
+        FreeStackAllocatorMemory(&allocator, presentModeCount * sizeof(VkPresentModeKHR));
+
+        // store surface capabilities here
+        VkSurfaceCapabilitiesKHR capabilities;
+
+        // get surface capabilities
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(renderer->physicalDevice, renderer->surface, &capabilities);
+
+        // choose extend2d settings
+        VkExtent2D extent;
+        if (capabilities.currentExtent.width != UINT32_MAX && capabilities.currentExtent.height != UINT32_MAX)
+        {
+            extent.width = capabilities.currentExtent.width;
+            extent.height = capabilities.currentExtent.height;
+        }
+        else 
+        {
+            WindowSize windowSize = GetWindowSize();
+
+            extent.width = windowSize.width;
+            extent.height = windowSize.height;
+
+            if (extent.width < capabilities.minImageExtent.width)
+            {
+                extent.width = capabilities.minImageExtent.width;
+            } 
+            else if (extent.width > capabilities.maxImageExtent.width)
+            {
+                extent.width = capabilities.maxImageExtent.width;
+            }
+
+            if (extent.height < capabilities.minImageExtent.height)
+            {
+                extent.height = capabilities.minImageExtent.height;
+            } 
+            else if (extent.height > capabilities.maxImageExtent.height)
+            {
+                extent.height = capabilities.maxImageExtent.height;
+            }
+        }
+        LogInfo(CHANNEL, "Extent2D Choosen: { Width: %d, Height: %d }",
+                extent.width, extent.height);
+
+        // setup image count of swapchain queue
+        u32 imageCount = capabilities.minImageCount + 1;
+
+        // swapchain creation info
+        VkSwapchainCreateInfoKHR swapchainInfo = {};
+        swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        swapchainInfo.surface = renderer->surface;
+        swapchainInfo.minImageCount = imageCount;
+        swapchainInfo.imageArrayLayers = 1;
+        swapchainInfo.imageFormat = format.format;
+        swapchainInfo.imageColorSpace = format.colorSpace;
+        swapchainInfo.imageExtent = extent;
+        swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        if (renderer->queueFamilyIndinces.graphics != renderer->queueFamilyIndinces.present)
+        {
+            u32 indinces[] = { renderer->queueFamilyIndinces.graphics != renderer->queueFamilyIndinces.present };
+            swapchainInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            swapchainInfo.queueFamilyIndexCount = 2;
+            swapchainInfo.pQueueFamilyIndices = indinces;
+        }
+        else 
+        {
+            swapchainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        }
+        swapchainInfo.preTransform = capabilities.currentTransform;
+        swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        swapchainInfo.presentMode = presentMode;
+        swapchainInfo.clipped = VK_TRUE;
+        swapchainInfo.oldSwapchain = null;
+
+        // create swapchain
+        VkResult result = vkCreateSwapchainKHR(renderer->logicalDevice, &swapchainInfo, null, &renderer->swapchain);
+
+        // check for errors
+        if (result != VK_SUCCESS)
+        {
+            LogError(CHANNEL, "Swapchain Not Created");
+            return false;
+        }
+        LogSuccess(CHANNEL, "Swapchain Created");
+    }
+
     // if code comes here, return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
     return true;
@@ -440,6 +588,10 @@ b8 StartupVKRenderer(void)
 
 void ShutdownVKRenderer(void)
 {
+    // destroy swapchain
+    vkDestroySwapchainKHR(renderer->logicalDevice, renderer->swapchain, null);
+    LogSuccess(CHANNEL, "Swapchain Destroyed");
+
     // destroy logical device
     vkDestroyDevice(renderer->logicalDevice, null);
     LogSuccess(CHANNEL, "Logical Device Destroyed");
