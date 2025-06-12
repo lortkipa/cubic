@@ -581,6 +581,18 @@ b8 StartupVKRenderer(void)
         LogSuccess(CHANNEL, "Swapchain Created");
     }
 
+    // query swapchain images
+    {
+        // get swapchain image count
+        u32 imageCount;
+        vkGetSwapchainImagesKHR(renderer->logicalDevice, renderer->swapchain, &imageCount, null);
+        LogInfo(CHANNEL, "Retrieved %d Swapchain Images", imageCount);
+
+        // get swapchain images
+        VkImage images[imageCount];
+        vkGetSwapchainImagesKHR(renderer->logicalDevice, renderer->swapchain, &imageCount, images);
+    }
+
     // if code comes here, return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
     return true;
