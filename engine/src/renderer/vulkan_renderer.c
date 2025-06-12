@@ -331,8 +331,35 @@ b8 StartupVKRenderer(void)
                 }
             }
 
+            // get format count
+            u32 formatCount;
+            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevices[i], renderer->surface, &formatCount, null);
+            LogInfo(CHANNEL, "Surface Format Found: %d", formatCount);
+
+            // get formats
+            VkSurfaceFormatKHR formats[formatCount];
+            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevices[i], renderer->surface, &formatCount, formats);
+
+            // get present mode count
+            u32 presentModeCount;
+            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevices[i], renderer->surface, &presentModeCount, null);
+            LogInfo(CHANNEL, "Surface Present Mode Found: %d", presentModeCount);
+
+            // get present modes
+            VkPresentModeKHR presentModes[presentModeCount];
+            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevices[i], renderer->surface, &presentModeCount, presentModes);
+            
+            // track if swapchain is supported for this gpu
+            b8 swapchainIsSupported = false;
+
+            // make sure swapchain has at list 1 supported present mode and 1 supported format
+            if (formatCount > 0 && presentModeCount > 0)
+            {
+                swapchainIsSupported = true;
+            }
+
             // try to pick gpu
-            if (graphicsQueueFamilyFound && extsSupported && features.geometryShader)
+            if (graphicsQueueFamilyFound && swapchainIsSupported && extsSupported && features.geometryShader)
             {
                 LogSuccess(CHANNEL, "GPU Picked: \"%s\"", properties.deviceName);
                 renderer->physicalDevice = physicalDevices[i];
