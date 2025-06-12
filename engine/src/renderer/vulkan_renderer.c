@@ -190,6 +190,15 @@ b8 StartupVKRenderer(void)
         LogSuccess(CHANNEL, "Surface Created");
     }
 
+    // physical device extensions
+    const char* physicalDeviceExts[] = 
+    {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
+    // calculate physical device extension count
+    u8 physicalDeviceExtCount = sizeof(physicalDeviceExts) / sizeof(char*);
+
     // pick physical device (GPU)
     {
         // get physical device count
@@ -232,7 +241,7 @@ b8 StartupVKRenderer(void)
             // get physical device queue family count
             u32 queueFamilyCount;
             vkGetPhysicalDeviceQueueFamilyProperties(physicalDevices[i], &queueFamilyCount, null);
-            
+
             // get physical device queue families
             VkQueueFamilyProperties* queueFamilies = RequestStackAllocatorMemory(&allocator, queueFamilyCount * sizeof(VkQueueFamilyProperties));
             vkGetPhysicalDeviceQueueFamilyProperties(physicalDevices[i], &queueFamilyCount, queueFamilies);
@@ -285,48 +294,39 @@ b8 StartupVKRenderer(void)
             VkExtensionProperties awailableExts[awailableExtCount];
             vkEnumerateDeviceExtensionProperties(physicalDevices[i], null, &awailableExtCount, null);
 
-            // extension that we need for application
-            const char* exts[] = 
-            {
-                VK_KHR_SWAPCHAIN_EXTENSION_NAME
-            };
-
-            // calculate needed extension count
-            u8 extCount = sizeof(exts) / sizeof(char*);
-
             // track wich needed extension was found
             b8 extStatuses[awailableExtCount] = {};
 
             // loop needed extension
-            for (u8 i = 0; i < extCount; i++)
+            for (u8 i = 0; i < physicalDeviceExtCount; i++)
             {
                 // loop awailable extensions
                 for (u32 j = 0; j < awailableExtCount; j++)
                 {
                     // if extensions is found track it
-                    if (strcmp(exts[i], awailableExts[j].extensionName))
+                    if (strcmp(physicalDeviceExts[i], awailableExts[j].extensionName))
                     {
                         extStatuses[i] = true;
-                        LogInfo(CHANNEL, "Extension Loaded: \"%s\"", exts[i]);
+                        LogInfo(CHANNEL, "Extension Loaded: \"%s\"", physicalDeviceExts[i]);
                         break;
                     }
                 }
             }
-            
+
             // track if all needed extension is supported
             b8 extsSupported = false;
 
             // check if all extension is found
-            for (u8 i = 0; i < extCount; i++)
+            for (u8 i = 0; i < physicalDeviceExtCount; i++)
             {
                 if (!extStatuses[i])
                 {
                     break;
                 }
 
-                if (i == (extCount - 1) && extStatuses[i])
+                if (i == (physicalDeviceExtCount - 1) && extStatuses[i])
                 {
-                    LogInfo(CHANNEL, "All Physical Device Extension Are Supported (%d)", extCount);
+                    LogInfo(CHANNEL, "All Physical Device Extension Are Supported (%d)", physicalDeviceExtCount);
                     extsSupported = true;
                 }
             }
@@ -339,7 +339,7 @@ b8 StartupVKRenderer(void)
                 break;
             }
         }
-        
+
         // release physical devices memory
         FreeStackAllocatorMemory(&allocator, physicalDeviceCount * sizeof(VkPhysicalDevice));
 
@@ -379,10 +379,12 @@ b8 StartupVKRenderer(void)
         logicalDeviceInfo.pQueueCreateInfos = queueInfos;
         logicalDeviceInfo.queueCreateInfoCount = queueInfoCount;
         logicalDeviceInfo.pEnabledFeatures = &rendererFeatures;
+        logicalDeviceInfo.ppEnabledExtensionNames = physicalDeviceExts;
+        logicalDeviceInfo.enabledExtensionCount = physicalDeviceExtCount;
 
         // create logical device
         VkResult result = vkCreateDevice(renderer->physicalDevice, &logicalDeviceInfo, null, &renderer->logicalDevice);
-        
+
         // free queue infos from heap
         FreeStackAllocatorMemory(&allocator, queueInfoCount * sizeof(VkDeviceQueueCreateInfo));
 
