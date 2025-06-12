@@ -1,6 +1,7 @@
 #include "renderer/vulkan_renderer.h"
 #include "platform/vulkan_platform.h"
 #include "platform/window.h"
+#include "core/memory.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
 #include <string.h>
@@ -458,6 +459,9 @@ b8 StartupVKRenderer(void)
         {
             format = formats[0];
         }
+        
+        // store vkImageFormat
+        renderer->imageFormat = format.format;
 
         // free formats array from heap
         FreeStackAllocatorMemory(&allocator, formatCount * sizeof(VkSurfaceFormatKHR));
@@ -581,16 +585,49 @@ b8 StartupVKRenderer(void)
         LogSuccess(CHANNEL, "Swapchain Created");
     }
 
-    // query swapchain images
+    // create image views
     {
         // get swapchain image count
-        u32 imageCount;
-        vkGetSwapchainImagesKHR(renderer->logicalDevice, renderer->swapchain, &imageCount, null);
-        LogInfo(CHANNEL, "Retrieved %d Swapchain Images", imageCount);
+        vkGetSwapchainImagesKHR(renderer->logicalDevice, renderer->swapchain, &renderer->imageViewCount, null);
+        LogInfo(CHANNEL, "Retrieved %d Swapchain Images", renderer->imageViewCount);
 
         // get swapchain images
-        VkImage images[imageCount];
-        vkGetSwapchainImagesKHR(renderer->logicalDevice, renderer->swapchain, &imageCount, images);
+        VkImage images[renderer->imageViewCount];
+        vkGetSwapchainImagesKHR(renderer->logicalDevice, renderer->swapchain, &renderer->imageViewCount, images);
+
+        // allocate data for image views
+        renderer->imageViews = AllocateMemory(renderer->imageViewCount * sizeof(VkImageView));
+
+        // loop thro images
+        for (u32 i = 0; i < renderer->imageViewCount; i++)
+        {
+            // image view creation settings for current image
+            VkImageViewCreateInfo imageViewinfo = {};
+            imageViewinfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            imageViewinfo.image = images[i];
+            imageViewinfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            imageViewinfo.format = renderer->imageFormat;
+            imageViewinfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewinfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewinfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewinfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewinfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            imageViewinfo.subresourceRange.layerCount = 1;
+            imageViewinfo.subresourceRange.levelCount = 1;
+            imageViewinfo.subresourceRange.baseMipLevel = 0;
+            imageViewinfo.subresourceRange.baseArrayLayer = 0;
+
+            // create image view
+            VkResult result = vkCreateImageView(renderer->logicalDevice, &imageViewinfo, null, &renderer->imageViews[i]);
+
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Image View Creation Failed");
+                return false;
+            }
+            LogSuccess(CHANNEL, "Image View Created");
+        }
     }
 
     // if code comes here, return success
@@ -600,6 +637,18 @@ b8 StartupVKRenderer(void)
 
 void ShutdownVKRenderer(void)
 {
+    // loop thro image views
+    for (u32 i = 0; i < renderer->imageViewCount; i++)
+    {
+        // destroy current image view
+        vkDestroyImageView(renderer->logicalDevice, renderer->imageViews[i], null);
+            LogSuccess(CHANNEL, "Image View Destroyed");
+    }
+
+    // free image views array from heap
+    FreeMemory(renderer->imageViews, renderer->imageViewCount * sizeof(VkImageView));
+    renderer->imageViewCount = 0;
+
     // destroy swapchain
     vkDestroySwapchainKHR(renderer->logicalDevice, renderer->swapchain, null);
     LogSuccess(CHANNEL, "Swapchain Destroyed");
