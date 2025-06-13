@@ -838,10 +838,54 @@ b8 StartupVKRenderer(void)
         }
         LogSuccess(CHANNEL, "Pipeline Layout Created");
     }
+
+    {
+        // attachemnt info
+        VkAttachmentDescription attachmentInfo = {};
+        attachmentInfo.format = renderer->imageFormat;
+        attachmentInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+        attachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        attachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        attachmentInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        attachmentInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+        // attachemnt reference
+        VkAttachmentReference attachmentRef = {};
+        attachmentRef.attachment = 0;
+        attachmentRef.layout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
+
+        // subpass
+        VkSubpassDescription subpassInfo = {};
+        subpassInfo.colorAttachmentCount = 1;
+        subpassInfo.pColorAttachments = &attachmentRef;
+
+        // renderpass info
+        VkRenderPassCreateInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.attachmentCount = 1;
+        renderPassInfo.pAttachments = &attachmentInfo;
+        renderPassInfo.subpassCount = 1;
+        renderPassInfo.pSubpasses = &subpassInfo;
+
+        // create renderpass
+        VkResult result = vkCreateRenderPass(renderer->logicalDevice, &renderPassInfo, null, &renderer->renderPass);
+
+        // check for errors
+        if (result != VK_SUCCESS)
+        {
+            LogError(CHANNEL, "Render Pass Creation Failed");
+            return 0;
+        }
+        LogSuccess(CHANNEL, "Render Pass Created");
+    }
 }
 
 void ShutdownVKRenderer(void)
 {
+    // destroy renderpass
+    vkDestroyRenderPass(renderer->logicalDevice, renderer->renderPass, null);
+    LogSuccess(CHANNEL, "Render Pass Destroyed");
+
     // destroy pipeline layout
     vkDestroyPipelineLayout(renderer->logicalDevice, renderer->pipelineLayout, null);
     LogSuccess(CHANNEL, "Pipeline Layout Destroyed");
