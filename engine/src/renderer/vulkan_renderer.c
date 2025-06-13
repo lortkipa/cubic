@@ -510,39 +510,38 @@ b8 StartupVKRenderer(void)
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(renderer->physicalDevice, renderer->surface, &capabilities);
 
         // choose extend2d settings
-        VkExtent2D extent;
         if (capabilities.currentExtent.width != UINT32_MAX && capabilities.currentExtent.height != UINT32_MAX)
         {
-            extent.width = capabilities.currentExtent.width;
-            extent.height = capabilities.currentExtent.height;
+            renderer->extent.width = capabilities.currentExtent.width;
+            renderer->extent.height = capabilities.currentExtent.height;
         }
         else 
         {
             WindowSize windowSize = GetWindowSize();
 
-            extent.width = windowSize.width;
-            extent.height = windowSize.height;
+            renderer->extent.width = windowSize.width;
+            renderer->extent.height = windowSize.height;
 
-            if (extent.width < capabilities.minImageExtent.width)
+            if (renderer->extent.width < capabilities.minImageExtent.width)
             {
-                extent.width = capabilities.minImageExtent.width;
+                renderer->extent.width = capabilities.minImageExtent.width;
             } 
-            else if (extent.width > capabilities.maxImageExtent.width)
+            else if (renderer->extent.width > capabilities.maxImageExtent.width)
             {
-                extent.width = capabilities.maxImageExtent.width;
+                renderer->extent.width = capabilities.maxImageExtent.width;
             }
 
-            if (extent.height < capabilities.minImageExtent.height)
+            if (renderer->extent.height < capabilities.minImageExtent.height)
             {
-                extent.height = capabilities.minImageExtent.height;
+                renderer->extent.height = capabilities.minImageExtent.height;
             } 
-            else if (extent.height > capabilities.maxImageExtent.height)
+            else if (renderer->extent.height > capabilities.maxImageExtent.height)
             {
-                extent.height = capabilities.maxImageExtent.height;
+                renderer->extent.height = capabilities.maxImageExtent.height;
             }
         }
         LogInfo(CHANNEL, "Extent2D Choosen: { Width: %d, Height: %d }",
-                extent.width, extent.height);
+                renderer->extent.width, renderer->extent.height);
 
         // setup image count of swapchain queue
         u32 imageCount = capabilities.minImageCount + 1;
@@ -555,7 +554,7 @@ b8 StartupVKRenderer(void)
         swapchainInfo.imageArrayLayers = 1;
         swapchainInfo.imageFormat = format.format;
         swapchainInfo.imageColorSpace = format.colorSpace;
-        swapchainInfo.imageExtent = extent;
+        swapchainInfo.imageExtent = renderer->extent;
         swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
         if (renderer->queueFamilyIndinces.graphics != renderer->queueFamilyIndinces.present)
         {
@@ -712,6 +711,24 @@ b8 StartupVKRenderer(void)
             FreeStackAllocatorMemory(&allocator, fragSize);
         }
 
+
+        // vertex shader stage info
+        VkPipelineShaderStageCreateInfo vertStageInfo = {};
+        vertStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertStageInfo.module = vertShader;
+        vertStageInfo.pName = "main";
+
+        // fragment shader stage info
+        VkPipelineShaderStageCreateInfo fragStageInfo = {};
+        fragStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragStageInfo.module = fragShader;
+        fragStageInfo.pName = "main";
+
+        // store shader stages here
+        VkPipelineShaderStageCreateInfo shaderStages[2] = { vertStageInfo, fragStageInfo };
+
         // destoy shader modules
         vkDestroyShaderModule(renderer->logicalDevice, vertShader, null);
         vkDestroyShaderModule(renderer->logicalDevice, fragShader, null);
@@ -719,13 +736,116 @@ b8 StartupVKRenderer(void)
         LogSuccess(CHANNEL, "Fragment Shader Module Destroyed");
     }
 
-    // if code comes here, return success
-    LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
-    return true;
+    {
+        // define dynamic states
+        VkDynamicState dynamicStates[] =
+        {
+            VK_DYNAMIC_STATE_VIEWPORT,
+            VK_DYNAMIC_STATE_SCISSOR
+        };
+
+        // calculate dyamic state size
+        u8 dynamicStateCount = sizeof(dynamicStates) / sizeof(VkDynamicState);
+        LogInfo(CHANNEL, "Dynamic State Count: %d", dynamicStateCount);
+
+        // dynamic state info
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateInfo.dynamicStateCount = dynamicStateCount;
+        dynamicStateInfo.pDynamicStates = dynamicStates;
+
+        // specify vertex input
+        VkPipelineVertexInputStateCreateInfo vertInputInfo = {};
+        vertInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {};
+        inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
+        // set viewport
+        VkViewport viewport = {};
+        viewport.x = 0;
+        viewport.y = 0;
+        viewport.width = renderer->extent.width;
+        viewport.height = renderer->extent.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        // set scissor
+        VkRect2D scissor = {};
+        scissor.offset.x = 0;
+        scissor.offset.y = 0;
+        scissor.extent = renderer->extent;
+
+        // viewport info
+        VkPipelineViewportStateCreateInfo viewportInfo = {};
+        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportInfo.viewportCount = 1;
+        viewportInfo.scissorCount = 1;
+
+        // rasterization info
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo = {};
+        rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizationInfo.depthClampEnable = VK_FALSE;
+        rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
+        rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+        rasterizationInfo.lineWidth = 1.0f;
+        rasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+        rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+
+        // multisampling info
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = {};
+        multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampleInfo.sampleShadingEnable = VK_FALSE;
+        multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+        // color blending infos
+        VkPipelineColorBlendAttachmentState colorBlendAttachInfo = {};
+        colorBlendAttachInfo.colorWriteMask = 
+            VK_COLOR_COMPONENT_R_BIT | 
+            VK_COLOR_COMPONENT_G_BIT | 
+            VK_COLOR_COMPONENT_B_BIT | 
+            VK_COLOR_COMPONENT_A_BIT;
+        colorBlendAttachInfo.blendEnable = VK_FALSE;
+        VkPipelineColorBlendStateCreateInfo colorBlendInfo = {};
+        colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlendInfo.logicOpEnable = VK_FALSE;
+        colorBlendInfo.attachmentCount = 1;
+        colorBlendInfo.pAttachments = &colorBlendAttachInfo;
+
+        // if code comes here, return success
+        LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
+        return true;
+    }
+
+    // create pipeline layout
+    {
+        // pipeline layout info
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 0;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+
+        // pipeline layout creation
+        VkResult result = vkCreatePipelineLayout(renderer->logicalDevice, &pipelineLayoutInfo, null, &renderer->pipelineLayout);
+
+        // check for errors
+        if (result != VK_SUCCESS)
+        {
+            LogError(CHANNEL, "Pipeline Layout Creation Failed");
+            return 0;
+        }
+        LogSuccess(CHANNEL, "Pipeline Layout Created");
+    }
 }
 
 void ShutdownVKRenderer(void)
 {
+    // destroy pipeline layout
+    vkDestroyPipelineLayout(renderer->logicalDevice, renderer->pipelineLayout, null);
+    LogSuccess(CHANNEL, "Pipeline Layout Destroyed");
+
     // loop thro image views
     for (u32 i = 0; i < renderer->imageViewCount; i++)
     {

@@ -28,10 +28,12 @@ typedef struct VKRenderer {
     VkPhysicalDevice physicalDevice;
     VkDevice logicalDevice;
     VkSurfaceKHR surface;
+    VkExtent2D extent;
     VkSwapchainKHR swapchain;
     VkFormat imageFormat;
     u32 imageViewCount;
     VkImageView* imageViews;
+    VkPipelineLayout pipelineLayout;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);
