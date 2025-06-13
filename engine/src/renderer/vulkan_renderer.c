@@ -813,10 +813,6 @@ b8 StartupVKRenderer(void)
         colorBlendInfo.logicOpEnable = VK_FALSE;
         colorBlendInfo.attachmentCount = 1;
         colorBlendInfo.pAttachments = &colorBlendAttachInfo;
-
-        // if code comes here, return success
-        LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
-        return true;
     }
 
     // create pipeline layout
@@ -852,7 +848,7 @@ b8 StartupVKRenderer(void)
         // attachemnt reference
         VkAttachmentReference attachmentRef = {};
         attachmentRef.attachment = 0;
-        attachmentRef.layout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
+        attachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         // subpass
         VkSubpassDescription subpassInfo = {};
@@ -878,6 +874,10 @@ b8 StartupVKRenderer(void)
         }
         LogSuccess(CHANNEL, "Render Pass Created");
     }
+
+    // if code comes here, return success
+    LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
+    return true;
 }
 
 void ShutdownVKRenderer(void)
