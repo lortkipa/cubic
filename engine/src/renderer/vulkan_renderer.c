@@ -906,14 +906,57 @@ b8 StartupVKRenderer(void)
         LogSuccess(CHANNEL, "Fragment Shader Module Destroyed");
     }
 
+    // swapchain framebuffers
+    {
+        // allocate framebuffers array on heap 
+        renderer->framebuffers = AllocateMemory(renderer->imageViewCount * sizeof(VkFramebuffer));
 
-    // if code comes here, return success
-    LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
-    return true;
+        // iterate imageviews
+        for (u32 i = 0; i < renderer->imageViewCount; i++)
+        {
+            // attachments
+            VkImageView attachments[] = { renderer->imageViews[i] };
+
+            // framebuffer info for each imageview
+            VkFramebufferCreateInfo framebufferInfo = {};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = renderer->renderPass;
+            framebufferInfo.attachmentCount = 1;
+            framebufferInfo.pAttachments = attachments;
+            framebufferInfo.width = renderer->extent.width;
+            framebufferInfo.height = renderer->extent.height;
+            framebufferInfo.layers = 1;
+
+            // create framebuffer
+            VkResult result = vkCreateFramebuffer(renderer->logicalDevice, &framebufferInfo, null, &renderer->framebuffers[i]);
+
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Framebuffer Creation Failed");
+                return 0;
+            }
+            LogSuccess(CHANNEL, "Framebuffer Created");
+        }
+
+        // if code comes here, return success
+        LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
+        return true;
+    }
 }
 
 void ShutdownVKRenderer(void)
 {
+    // destroy all framebuffers
+    for (u32 i = 0; i < renderer->imageViewCount; i++)
+    {
+        vkDestroyFramebuffer(renderer->logicalDevice, renderer->framebuffers[i], null);
+        LogSuccess(CHANNEL, "Framebuffer Destroyed");
+    }
+
+    // free framebuffers array from heap
+    FreeMemory(renderer->framebuffers, renderer->imageViewCount * sizeof(VkFramebuffer));
+
     // destroy graphics pipeline
     vkDestroyPipeline(renderer->logicalDevice, renderer->graphicsPipeline, null);
     LogSuccess(CHANNEL, "Graphics Pipeline Destroyed");
