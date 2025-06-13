@@ -78,7 +78,7 @@ void FreeStackAllocatorMemory(StackAllocator* p_allocator, const u32 size)
     Assert(CHANNEL, size > 0, "Invalid Size Provided");
     
     // make sure allocator is able to free that much memory
-    Assert(CHANNEL, size <= (p_allocator->size - p_allocator->used), "Too Much Memory Requested");
+    Assert(CHANNEL, size <= p_allocator->used, "Too Much Memory Requested");
 
     // move marker
     p_allocator->used -= size;

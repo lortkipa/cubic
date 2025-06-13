@@ -5,6 +5,7 @@
 #include "core/stack_allocator.h"
 #include "core/logger.h"
 #include <string.h>
+#include <stdio.h>
 
 #define CHANNEL "Vulkan Renderer"
 
@@ -65,7 +66,7 @@ static void DestroyVKMessenger(VkInstance instance, VkDebugUtilsMessengerEXT mes
 b8 StartupVKRenderer(void)
 {
     // create allocator
-    if (!CreateStackAllocator(&allocator, sizeof(VKRenderer) + 1000))
+    if (!CreateStackAllocator(&allocator, sizeof(VKRenderer) + 3000))
     {
         LogError(CHANNEL, "Stack Allocator Creation Failed");
         return false;
@@ -459,7 +460,7 @@ b8 StartupVKRenderer(void)
         {
             format = formats[0];
         }
-        
+
         // store vkImageFormat
         renderer->imageFormat = format.format;
 
@@ -491,14 +492,14 @@ b8 StartupVKRenderer(void)
                 break;
             }
         }
-        
+
         // if best present mode is not awailable, choose guarentieed one
         if (!presentModeIsChoosen)
         {
             presentMode = VK_PRESENT_MODE_FIFO_KHR;
             LogInfo(CHANNEL, "Present Mode Choosen: \"VK_PRESENT_MODE_FIFO_KHR\"");
         }
-        
+
         // free present modes array from heap
         FreeStackAllocatorMemory(&allocator, presentModeCount * sizeof(VkPresentModeKHR));
 
@@ -630,6 +631,94 @@ b8 StartupVKRenderer(void)
         }
     }
 
+    // create graphics pipeline
+    {
+        // store shader modules here
+        VkShaderModule vertShader, fragShader;
+
+        // create vertex shader module
+        {
+            // read vertex shader
+            FILE* vertFile = fopen("../bin/default_color.vert.spv", "rb");
+            if (!vertFile)
+            {
+                LogError(CHANNEL, "Vertex Shader Binary Not Found");
+                return false;
+            }
+            fseek(vertFile, 0, SEEK_END);
+            u64 vertSize = ftell(vertFile);
+            fseek(vertFile, 0, SEEK_SET);
+            LogInfo(CHANNEL, "Vertex Shader Binary File Size: %dB", vertSize);
+            u32* vertData = RequestStackAllocatorMemory(&allocator, vertSize);
+            fread(vertData, 1, vertSize, vertFile);
+            fclose(vertFile);
+
+            // vertex shader module info
+            VkShaderModuleCreateInfo vertInfo = {};
+            vertInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+            vertInfo.codeSize = vertSize;
+            vertInfo.pCode = vertData;
+
+            // create vertex shader module
+            VkResult result = vkCreateShaderModule(renderer->logicalDevice, &vertInfo, null, &vertShader);
+
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Vertex Shader Module Created");
+                return false;
+            }
+            LogSuccess(CHANNEL, "Vertex Shader Module Created");
+
+            // free shader data
+            FreeStackAllocatorMemory(&allocator, vertSize);
+        }
+
+        // create fragment shader module
+        {
+            // read fragment shader
+            FILE* fragFile = fopen("../bin/default_color.frag.spv", "rb");
+            if (!fragFile)
+            {
+                LogError(CHANNEL, "Fragment Shader Binary Not Found");
+                return false;
+            }
+            fseek(fragFile, 0, SEEK_END);
+            u64 fragSize = ftell(fragFile);
+            fseek(fragFile, 0, SEEK_SET);
+            LogInfo(CHANNEL, "Fragment Shader Binary File Size: %dB", fragSize);
+            u32* fragData = RequestStackAllocatorMemory(&allocator, fragSize);
+            fread(fragData, 1, fragSize, fragFile);
+            fclose(fragFile);
+
+            // vertex shader module info
+            VkShaderModuleCreateInfo fragInfo = {};
+            fragInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+            fragInfo.codeSize = fragSize;
+            fragInfo.pCode = fragData;
+
+            // create vertex shader module
+            VkResult result = vkCreateShaderModule(renderer->logicalDevice, &fragInfo, null, &fragShader);
+
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Fragment Shader Module Created");
+                return false;
+            }
+            LogSuccess(CHANNEL, "Fragment Shader Module Created");
+
+            // free shader data
+            FreeStackAllocatorMemory(&allocator, fragSize);
+        }
+
+        // destoy shader modules
+        vkDestroyShaderModule(renderer->logicalDevice, vertShader, null);
+        vkDestroyShaderModule(renderer->logicalDevice, fragShader, null);
+        LogSuccess(CHANNEL, "Vertex Shader Module Destroyed");
+        LogSuccess(CHANNEL, "Fragment Shader Module Destroyed");
+    }
+
     // if code comes here, return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
     return true;
@@ -642,7 +731,7 @@ void ShutdownVKRenderer(void)
     {
         // destroy current image view
         vkDestroyImageView(renderer->logicalDevice, renderer->imageViews[i], null);
-            LogSuccess(CHANNEL, "Image View Destroyed");
+        LogSuccess(CHANNEL, "Image View Destroyed");
     }
 
     // free image views array from heap
