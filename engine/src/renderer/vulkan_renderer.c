@@ -820,7 +820,7 @@ b8 StartupVKRenderer(void)
             if (result != VK_SUCCESS)
             {
                 LogError(CHANNEL, "Pipeline Layout Creation Failed");
-                return 0;
+                return false;
             }
             LogSuccess(CHANNEL, "Pipeline Layout Created");
         }
@@ -894,7 +894,7 @@ b8 StartupVKRenderer(void)
             if (result != VK_SUCCESS)
             {
                 LogError(CHANNEL, "Graphics Pipeline Creation Failed");
-                return 0;
+                return false;
             }
             LogSuccess(CHANNEL, "Graphics Pipeline Created");
         }
@@ -938,15 +938,39 @@ b8 StartupVKRenderer(void)
             }
             LogSuccess(CHANNEL, "Framebuffer Created");
         }
-
-        // if code comes here, return success
-        LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
-        return true;
     }
+
+    // command pool
+    {
+        // command pool info
+        VkCommandPoolCreateInfo commandPoolInfo = {};
+        commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        commandPoolInfo.queueFamilyIndex = renderer->queueFamilyIndinces.graphics;
+
+        // create command pool
+        VkResult result = vkCreateCommandPool(renderer->logicalDevice, &commandPoolInfo, null, &renderer->commandPool);
+
+        // check for errors
+        if (result != VK_SUCCESS)
+        {
+            LogSuccess(CHANNEL, "Command Pool Creation Failed");
+            return false;
+        }
+        LogSuccess(CHANNEL, "Command Pool Created");
+    }
+
+    // if code comes here, return success
+    LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
+    return true;
 }
 
 void ShutdownVKRenderer(void)
 {
+    // destroy command pool
+    vkDestroyCommandPool(renderer->logicalDevice, renderer->commandPool, null);
+    LogSuccess(CHANNEL, "Command Pool Created");
+
     // destroy all framebuffers
     for (u32 i = 0; i < renderer->imageViewCount; i++)
     {
