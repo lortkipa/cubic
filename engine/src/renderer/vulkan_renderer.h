@@ -35,6 +35,7 @@ typedef struct VKRenderer {
     VkImageView* imageViews;
     VkPipelineLayout pipelineLayout;
     VkRenderPass renderPass;
+    VkPipeline graphicsPipeline;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);

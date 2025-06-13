@@ -729,14 +729,6 @@ b8 StartupVKRenderer(void)
         // store shader stages here
         VkPipelineShaderStageCreateInfo shaderStages[2] = { vertStageInfo, fragStageInfo };
 
-        // destoy shader modules
-        vkDestroyShaderModule(renderer->logicalDevice, vertShader, null);
-        vkDestroyShaderModule(renderer->logicalDevice, fragShader, null);
-        LogSuccess(CHANNEL, "Vertex Shader Module Destroyed");
-        LogSuccess(CHANNEL, "Fragment Shader Module Destroyed");
-    }
-
-    {
         // define dynamic states
         VkDynamicState dynamicStates[] =
         {
@@ -813,10 +805,7 @@ b8 StartupVKRenderer(void)
         colorBlendInfo.logicOpEnable = VK_FALSE;
         colorBlendInfo.attachmentCount = 1;
         colorBlendInfo.pAttachments = &colorBlendAttachInfo;
-    }
 
-    // create pipeline layout
-    {
         // pipeline layout info
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -824,18 +813,18 @@ b8 StartupVKRenderer(void)
         pipelineLayoutInfo.pushConstantRangeCount = 0;
 
         // pipeline layout creation
-        VkResult result = vkCreatePipelineLayout(renderer->logicalDevice, &pipelineLayoutInfo, null, &renderer->pipelineLayout);
-
-        // check for errors
-        if (result != VK_SUCCESS)
         {
-            LogError(CHANNEL, "Pipeline Layout Creation Failed");
-            return 0;
-        }
-        LogSuccess(CHANNEL, "Pipeline Layout Created");
-    }
+            VkResult result = vkCreatePipelineLayout(renderer->logicalDevice, &pipelineLayoutInfo, null, &renderer->pipelineLayout);
 
-    {
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Pipeline Layout Creation Failed");
+                return 0;
+            }
+            LogSuccess(CHANNEL, "Pipeline Layout Created");
+        }
+
         // attachemnt info
         VkAttachmentDescription attachmentInfo = {};
         attachmentInfo.format = renderer->imageFormat;
@@ -864,16 +853,59 @@ b8 StartupVKRenderer(void)
         renderPassInfo.pSubpasses = &subpassInfo;
 
         // create renderpass
-        VkResult result = vkCreateRenderPass(renderer->logicalDevice, &renderPassInfo, null, &renderer->renderPass);
-
-        // check for errors
-        if (result != VK_SUCCESS)
         {
-            LogError(CHANNEL, "Render Pass Creation Failed");
-            return 0;
+            VkResult result = vkCreateRenderPass(renderer->logicalDevice, &renderPassInfo, null, &renderer->renderPass);
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Render Pass Creation Failed");
+                return 0;
+            }
+            LogSuccess(CHANNEL, "Render Pass Created");
         }
-        LogSuccess(CHANNEL, "Render Pass Created");
+
+        // graphics pipeline info
+        VkGraphicsPipelineCreateInfo pipelineInfo = {};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.stageCount = 2;
+        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.pVertexInputState = &vertInputInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;
+        pipelineInfo.pViewportState = &viewportInfo;
+        pipelineInfo.pRasterizationState = &rasterizationInfo;
+        pipelineInfo.pMultisampleState = &multisampleInfo;
+        pipelineInfo.pColorBlendState = &colorBlendInfo;
+        pipelineInfo.pDynamicState = &dynamicStateInfo;
+        pipelineInfo.layout = renderer->pipelineLayout;
+        pipelineInfo.renderPass = renderer->renderPass;
+        pipelineInfo.subpass = 0;
+
+        // create graphics pipeline
+        {
+            VkResult result = vkCreateGraphicsPipelines
+                (renderer->logicalDevice,
+                 VK_NULL_HANDLE,
+                 1,
+                 &pipelineInfo,
+                 null,
+                 &renderer->graphicsPipeline);
+
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Graphics Pipeline Creation Failed");
+                return 0;
+            }
+            LogSuccess(CHANNEL, "Graphics Pipeline Created");
+        }
+
+        // destoy shader modules
+        vkDestroyShaderModule(renderer->logicalDevice, vertShader, null);
+        vkDestroyShaderModule(renderer->logicalDevice, fragShader, null);
+        LogSuccess(CHANNEL, "Vertex Shader Module Destroyed");
+        LogSuccess(CHANNEL, "Fragment Shader Module Destroyed");
     }
+
 
     // if code comes here, return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
@@ -882,6 +914,10 @@ b8 StartupVKRenderer(void)
 
 void ShutdownVKRenderer(void)
 {
+    // destroy graphics pipeline
+    vkDestroyPipeline(renderer->logicalDevice, renderer->graphicsPipeline, null);
+    LogSuccess(CHANNEL, "Graphics Pipeline Destroyed");
+
     // destroy renderpass
     vkDestroyRenderPass(renderer->logicalDevice, renderer->renderPass, null);
     LogSuccess(CHANNEL, "Render Pass Destroyed");
