@@ -10,3 +10,7 @@ release:
 
 debug:
 	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) $(DEBUG_FLAGS) -o ../bin/libengine.so
+
+shaders:
+	glslc assets/shaders/default_color.vert -o ../bin/default_color.vert.spv
+	glslc assets/shaders/default_color.frag -o ../bin/default_color.frag.spv
