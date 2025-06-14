@@ -4,7 +4,11 @@
 #include <vulkan/vulkan.h>
 
 typedef struct VKRenderer {
-    VkInstance instance;
+    VkInstance Instance;
+
+#if defined(DEBUG)
+    VkDebugUtilsMessengerEXT DebugMessenger;
+#endif
 } VKRenderer;
 
 b8 StartupVKRenderer(void);

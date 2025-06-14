@@ -69,6 +69,25 @@
       "-O0",
       "-o",
       "../bin/libengine.so",
+      "src/platform/vulkan_platform.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform.c",
+    "output": "/home/nikoloz/Cubic/bin/libengine.so"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-fPIC",
+      "-Isrc",
+      "-g",
+      "-DDEBUG",
+      "-O0",
+      "-o",
+      "../bin/libengine.so",
       "src/core/event.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
@@ -216,12 +235,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/renderer-b17af5.o",
+      "/tmp/renderer-c8e647.o",
       "src/renderer/renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/renderer.c",
-    "output": "/tmp/renderer-b17af5.o"
+    "output": "/tmp/renderer-c8e647.o"
   },
   {
     "arguments": [
@@ -288,12 +307,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/vulkan_renderer-99d934.o",
+      "/tmp/vulkan_renderer-9667b6.o",
       "src/renderer/vulkan_renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/vulkan_renderer.c",
-    "output": "/tmp/vulkan_renderer-99d934.o"
+    "output": "/tmp/vulkan_renderer-9667b6.o"
   },
   {
     "arguments": [
@@ -360,12 +379,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/window_linux-cffb01.o",
+      "/tmp/window_linux-d9e7ba.o",
       "src/platform/window_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window_linux.c",
-    "output": "/tmp/window_linux-cffb01.o"
+    "output": "/tmp/window_linux-d9e7ba.o"
   },
   {
     "arguments": [
@@ -432,12 +451,84 @@
       "-x",
       "c",
       "-o",
-      "/tmp/event-b38431.o",
+      "/tmp/vulkan_platform-0d69c8.o",
+      "src/platform/vulkan_platform.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform.c",
+    "output": "/tmp/vulkan_platform-0d69c8.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-20",
+      "-cc1",
+      "-triple",
+      "x86_64-pc-linux-gnu",
+      "-emit-obj",
+      "-dumpdir",
+      "../bin/libengine.so-",
+      "-disable-free",
+      "-clear-ast-before-backend",
+      "-disable-llvm-verifier",
+      "-discard-value-names",
+      "-main-file-name",
+      "-mrelocation-model",
+      "pic",
+      "-pic-level",
+      "2",
+      "-fhalf-no-semantic-interposition",
+      "-mframe-pointer=all",
+      "-fmath-errno",
+      "-ffp-contract=on",
+      "-fno-rounding-math",
+      "-mconstructor-aliases",
+      "-funwind-tables=2",
+      "-target-cpu",
+      "x86-64",
+      "-tune-cpu",
+      "generic",
+      "-debug-info-kind=constructor",
+      "-dwarf-version=5",
+      "-debugger-tuning=gdb",
+      "-fdebug-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-fcoverage-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-resource-dir",
+      "/usr/lib/clang/20",
+      "-I",
+      "src",
+      "-D",
+      "DEBUG",
+      "-internal-isystem",
+      "/usr/lib/clang/20/include",
+      "-internal-isystem",
+      "/usr/local/include",
+      "-internal-isystem",
+      "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.1.1/../../../../x86_64-pc-linux-gnu/include",
+      "-internal-externc-isystem",
+      "/include",
+      "-internal-externc-isystem",
+      "/usr/include",
+      "-O0",
+      "-Wall",
+      "-Wextra",
+      "-ferror-limit",
+      "19",
+      "-stack-protector",
+      "2",
+      "-fgnuc-version=4.2.1",
+      "-fskip-odr-check-in-gmf",
+      "-fcolor-diagnostics",
+      "-faddrsig",
+      "-D__GCC_HAVE_DWARF2_CFI_ASM=1",
+      "-x",
+      "c",
+      "-o",
+      "/tmp/event-e2c58a.o",
       "src/core/event.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/event.c",
-    "output": "/tmp/event-b38431.o"
+    "output": "/tmp/event-e2c58a.o"
   },
   {
     "arguments": [
@@ -504,12 +595,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/memory-9af894.o",
+      "/tmp/memory-4a04af.o",
       "src/core/memory.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/memory.c",
-    "output": "/tmp/memory-9af894.o"
+    "output": "/tmp/memory-4a04af.o"
   },
   {
     "arguments": [
@@ -576,12 +667,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/logger-637130.o",
+      "/tmp/logger-df0ce8.o",
       "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
-    "output": "/tmp/logger-637130.o"
+    "output": "/tmp/logger-df0ce8.o"
   },
   {
     "arguments": [
@@ -648,12 +739,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/assert-078507.o",
+      "/tmp/assert-cf8764.o",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/assert.c",
-    "output": "/tmp/assert-078507.o"
+    "output": "/tmp/assert-cf8764.o"
   },
   {
     "arguments": [
@@ -720,11 +811,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/stack_allocator-4962de.o",
+      "/tmp/stack_allocator-06a250.o",
       "src/core/stack_allocator.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
-    "output": "/tmp/stack_allocator-4962de.o"
+    "output": "/tmp/stack_allocator-06a250.o"
   }
 ]

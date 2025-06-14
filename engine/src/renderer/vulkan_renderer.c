@@ -1,4 +1,5 @@
 #include "renderer/vulkan_renderer.h"
+#include "platform/vulkan_platform.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
 
@@ -57,15 +58,53 @@ static b8 CreateVKInstance(void)
         .apiVersion = VK_API_VERSION_1_3
     };
 
+    // get needed extensions
+    u8 extCount;
+    const char** exts = GetVKInstanceExtensions(&extCount);
+
+    // log extensions in debug mode
+#if defined(DEBUG)
+
+    for (u8 i = 0; i < extCount; i++)
+    {
+        LogInfo(CHANNEL, "Loading Instance Extensions: \"%s\"", exts[i]);
+    }
+
+#endif
+
+    // define validation layers depending on debug mode
+#if defined(DEBUG)
+    const char* layers[]  = { "VK_LAYER_KHRONOS_validation" };
+#else
+    const char* layers[0];
+#endif
+
+    // calculate layer count dynamicly
+    u8 layerCount = sizeof(layers) / sizeof(char*);
+
+    // log layers in debug mode
+#if defined(DEBUG)
+
+    for (u8 i = 0; i < layerCount; i++)
+    {
+        LogInfo(CHANNEL, "Loading Instance Layer: \"%s\"", layers[i]);
+    }
+
+#endif
+
     // instance info
     VkInstanceCreateInfo instanceInfo = 
     {
         .sType = instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pApplicationInfo = &appInfo
+        .pApplicationInfo = &appInfo,
+        .enabledExtensionCount = extCount,
+        .ppEnabledExtensionNames = exts,
+        .enabledLayerCount = layerCount, 
+        .ppEnabledLayerNames = layers
     };
 
     // create instance
-    VkResult result = vkCreateInstance(&instanceInfo, null, &renderer->instance);
+    VkResult result = vkCreateInstance(&instanceInfo, null, &renderer->Instance);
 
     // check for errors
     if (result != VK_SUCCESS)
@@ -81,6 +120,6 @@ static b8 CreateVKInstance(void)
 static void DestroyVKInstance()
 {
     // destroy instance
-    vkDestroyInstance(renderer->instance, null);
+    vkDestroyInstance(renderer->Instance, null);
     LogSuccess(CHANNEL, "Instance Destroyed");
 }
