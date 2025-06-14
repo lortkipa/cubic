@@ -19,7 +19,7 @@ int main(void)
     StartupEventSystem();
     SubToEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST, onCloseRequest);
     CreateWindow(1000, 800, "Cubic Game");
-    StartupRenderer();
+    StartupRenderer(RENDERER_BACKEND_VULKAN);
 
     // game loop
     while (isRunning)

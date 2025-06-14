@@ -1,19 +1,20 @@
 #pragma once
 
-#include "defines.h"
+#include "renderer/renderer_defines.h"
 
-typedef struct Color {
-    i8 r;
-    i8 g;
-    i8 b;
-    i8 a;
-} Color;
+typedef enum RendererBackend {
+    RENDERER_BACKEND_VULKAN
+} RendererBackend;
 
 typedef struct Renderer {
+    b8 (*Startup)(void);
+    void (*Shutdown)(void);
+    void (*DrawFrame)(void);
+
     Color background;
 } Renderer;
 
-b8 StartupRenderer(void);
+b8 StartupRenderer(const RendererBackend backend);
 
 void ShutdownRenderer(void);
 
