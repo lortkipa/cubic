@@ -2,7 +2,6 @@
 #include <core/memory.h>
 #include <core/event.h>
 #include <platform/window.h>
-#include <renderer/renderer.h>
 
 static b8 isRunning = true;
 
@@ -19,7 +18,6 @@ int main(void)
     StartupEventSystem();
     SubToEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST, onCloseRequest);
     CreateWindow(1000, 800, "Cubic Game");
-    StartupRenderer(RENDERER_BACKEND_VULKAN);
 
     // game loop
     while (isRunning)
@@ -27,13 +25,9 @@ int main(void)
         // poll & process events
         FireWindowEvents();
         ProcessEvents();
-
-        // draw on screen
-        RunRenderer();
     }
 
     // shutdown systems
-    ShutdownRenderer();
     DestroyWindow();
     UnsubToEvent(EVENT_TYPE_WINDOW_EXIT_REQUEST, onCloseRequest);
     ShutdownEventSystem();
