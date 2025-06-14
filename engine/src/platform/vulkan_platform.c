@@ -9,6 +9,11 @@ const char** GetVKInstanceExtensions(u8* p_count)
     {
         "VK_KHR_surface",
         "VK_KHR_xlib_surface",
+
+#if defined(DEBUG)
+        "VK_EXT_debug_utils"
+#endif
+
     };
 
 #elif defined(PLATFORM_WINDOWS)
@@ -16,7 +21,12 @@ const char** GetVKInstanceExtensions(u8* p_count)
     static const char* exts[] = 
     {
         "VK_KHR_surface",
-        "VK_KHR_win32_surface"
+        "VK_KHR_win32_surface",
+
+#if defined(DEBUG)
+        "VK_EXT_debug_utils"
+#endif
+
     };
 
 #endif

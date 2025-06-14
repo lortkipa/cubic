@@ -64,12 +64,10 @@ static b8 CreateVKInstance(void)
 
     // log extensions in debug mode
 #if defined(DEBUG)
-
     for (u8 i = 0; i < extCount; i++)
     {
         LogInfo(CHANNEL, "Loading Instance Extensions: \"%s\"", exts[i]);
     }
-
 #endif
 
     // define validation layers depending on debug mode
@@ -84,12 +82,10 @@ static b8 CreateVKInstance(void)
 
     // log layers in debug mode
 #if defined(DEBUG)
-
     for (u8 i = 0; i < layerCount; i++)
     {
         LogInfo(CHANNEL, "Loading Instance Layer: \"%s\"", layers[i]);
     }
-
 #endif
 
     // instance info
