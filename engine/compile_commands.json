@@ -12,10 +12,48 @@
       "-O0",
       "-o",
       "../bin/libengine.so",
+      "src/renderer/renderer.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/renderer/renderer.c",
+    "output": "/home/nikoloz/Cubic/bin/libengine.so"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-fPIC",
+      "-Isrc",
+      "-g",
+      "-DDEBUG",
+      "-O0",
+      "-o",
+      "../bin/libengine.so",
       "src/platform/window_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window_linux.c",
+    "output": "/home/nikoloz/Cubic/bin/libengine.so"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-fPIC",
+      "-Isrc",
+      "-g",
+      "-DDEBUG",
+      "-O0",
+      "-o",
+      "../bin/libengine.so",
+      "src/platform/context_linux.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/platform/context_linux.c",
     "output": "/home/nikoloz/Cubic/bin/libengine.so"
   },
   {
@@ -178,12 +216,84 @@
       "-x",
       "c",
       "-o",
-      "/tmp/window_linux-eb4188.o",
+      "/tmp/renderer-91ac90.o",
+      "src/renderer/renderer.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/renderer/renderer.c",
+    "output": "/tmp/renderer-91ac90.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-20",
+      "-cc1",
+      "-triple",
+      "x86_64-pc-linux-gnu",
+      "-emit-obj",
+      "-dumpdir",
+      "../bin/libengine.so-",
+      "-disable-free",
+      "-clear-ast-before-backend",
+      "-disable-llvm-verifier",
+      "-discard-value-names",
+      "-main-file-name",
+      "-mrelocation-model",
+      "pic",
+      "-pic-level",
+      "2",
+      "-fhalf-no-semantic-interposition",
+      "-mframe-pointer=all",
+      "-fmath-errno",
+      "-ffp-contract=on",
+      "-fno-rounding-math",
+      "-mconstructor-aliases",
+      "-funwind-tables=2",
+      "-target-cpu",
+      "x86-64",
+      "-tune-cpu",
+      "generic",
+      "-debug-info-kind=constructor",
+      "-dwarf-version=5",
+      "-debugger-tuning=gdb",
+      "-fdebug-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-fcoverage-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-resource-dir",
+      "/usr/lib/clang/20",
+      "-I",
+      "src",
+      "-D",
+      "DEBUG",
+      "-internal-isystem",
+      "/usr/lib/clang/20/include",
+      "-internal-isystem",
+      "/usr/local/include",
+      "-internal-isystem",
+      "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.1.1/../../../../x86_64-pc-linux-gnu/include",
+      "-internal-externc-isystem",
+      "/include",
+      "-internal-externc-isystem",
+      "/usr/include",
+      "-O0",
+      "-Wall",
+      "-Wextra",
+      "-ferror-limit",
+      "19",
+      "-stack-protector",
+      "2",
+      "-fgnuc-version=4.2.1",
+      "-fskip-odr-check-in-gmf",
+      "-fcolor-diagnostics",
+      "-faddrsig",
+      "-D__GCC_HAVE_DWARF2_CFI_ASM=1",
+      "-x",
+      "c",
+      "-o",
+      "/tmp/window_linux-c94c2f.o",
       "src/platform/window_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window_linux.c",
-    "output": "/tmp/window_linux-eb4188.o"
+    "output": "/tmp/window_linux-c94c2f.o"
   },
   {
     "arguments": [
@@ -250,12 +360,84 @@
       "-x",
       "c",
       "-o",
-      "/tmp/event-8050a1.o",
+      "/tmp/context_linux-9e68a3.o",
+      "src/platform/context_linux.c"
+    ],
+    "directory": "/home/nikoloz/Cubic/engine",
+    "file": "/home/nikoloz/Cubic/engine/src/platform/context_linux.c",
+    "output": "/tmp/context_linux-9e68a3.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-20",
+      "-cc1",
+      "-triple",
+      "x86_64-pc-linux-gnu",
+      "-emit-obj",
+      "-dumpdir",
+      "../bin/libengine.so-",
+      "-disable-free",
+      "-clear-ast-before-backend",
+      "-disable-llvm-verifier",
+      "-discard-value-names",
+      "-main-file-name",
+      "-mrelocation-model",
+      "pic",
+      "-pic-level",
+      "2",
+      "-fhalf-no-semantic-interposition",
+      "-mframe-pointer=all",
+      "-fmath-errno",
+      "-ffp-contract=on",
+      "-fno-rounding-math",
+      "-mconstructor-aliases",
+      "-funwind-tables=2",
+      "-target-cpu",
+      "x86-64",
+      "-tune-cpu",
+      "generic",
+      "-debug-info-kind=constructor",
+      "-dwarf-version=5",
+      "-debugger-tuning=gdb",
+      "-fdebug-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-fcoverage-compilation-dir=/home/nikoloz/Cubic/engine",
+      "-resource-dir",
+      "/usr/lib/clang/20",
+      "-I",
+      "src",
+      "-D",
+      "DEBUG",
+      "-internal-isystem",
+      "/usr/lib/clang/20/include",
+      "-internal-isystem",
+      "/usr/local/include",
+      "-internal-isystem",
+      "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.1.1/../../../../x86_64-pc-linux-gnu/include",
+      "-internal-externc-isystem",
+      "/include",
+      "-internal-externc-isystem",
+      "/usr/include",
+      "-O0",
+      "-Wall",
+      "-Wextra",
+      "-ferror-limit",
+      "19",
+      "-stack-protector",
+      "2",
+      "-fgnuc-version=4.2.1",
+      "-fskip-odr-check-in-gmf",
+      "-fcolor-diagnostics",
+      "-faddrsig",
+      "-D__GCC_HAVE_DWARF2_CFI_ASM=1",
+      "-x",
+      "c",
+      "-o",
+      "/tmp/event-da14e5.o",
       "src/core/event.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/event.c",
-    "output": "/tmp/event-8050a1.o"
+    "output": "/tmp/event-da14e5.o"
   },
   {
     "arguments": [
@@ -322,12 +504,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/memory-57b615.o",
+      "/tmp/memory-3d22f0.o",
       "src/core/memory.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/memory.c",
-    "output": "/tmp/memory-57b615.o"
+    "output": "/tmp/memory-3d22f0.o"
   },
   {
     "arguments": [
@@ -394,12 +576,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/logger-617c02.o",
+      "/tmp/logger-243b7b.o",
       "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
-    "output": "/tmp/logger-617c02.o"
+    "output": "/tmp/logger-243b7b.o"
   },
   {
     "arguments": [
@@ -466,12 +648,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/assert-4c3937.o",
+      "/tmp/assert-cf75f5.o",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/assert.c",
-    "output": "/tmp/assert-4c3937.o"
+    "output": "/tmp/assert-cf75f5.o"
   },
   {
     "arguments": [
@@ -538,11 +720,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/stack_allocator-2c54a4.o",
+      "/tmp/stack_allocator-d741fe.o",
       "src/core/stack_allocator.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
-    "output": "/tmp/stack_allocator-2c54a4.o"
+    "output": "/tmp/stack_allocator-d741fe.o"
   }
 ]

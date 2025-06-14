@@ -85,11 +85,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/main-ebefb6.o",
+      "/tmp/main-111bcc.o",
       "src/main.c"
     ],
     "directory": "/home/nikoloz/Cubic/testbed",
     "file": "/home/nikoloz/Cubic/testbed/src/main.c",
-    "output": "/tmp/main-ebefb6.o"
+    "output": "/tmp/main-111bcc.o"
   }
 ]

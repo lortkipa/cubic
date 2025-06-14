@@ -15,7 +15,7 @@
 
 typedef union EventArgValue {
     i32 asI32;
-    u32 asu32;
+    u32 asU32;
     f32 asF32;
     char asChar;
 } EventArgValue;

@@ -1,6 +1,6 @@
 COMPILER = clang
 SOURCES = $(shell find src -name *.c)
-LIBRARIES = -lX11
+LIBRARIES = -lX11 -lGLX -lGLEW -lGL
 FLAGS = -Wall -Wextra -fPIC -shared -Isrc
 RELEASE_FLAGS = -O3
 DEBUG_FLAGS = -g -DDEBUG -O0
@@ -10,7 +10,3 @@ release:
 
 debug:
 	$(COMPILER) $(SOURCES) $(LIBRARIES) $(FLAGS) $(DEBUG_FLAGS) -o ../bin/libengine.so
-
-shaders:
-	glslc assets/shaders/default_color.vert -o ../bin/default_color.vert.spv
-	glslc assets/shaders/default_color.frag -o ../bin/default_color.frag.spv
