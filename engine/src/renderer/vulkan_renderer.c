@@ -960,6 +960,143 @@ b8 StartupVKRenderer(void)
         LogSuccess(CHANNEL, "Command Pool Created");
     }
 
+    // command buffer
+    {
+        // command buffer info
+        VkCommandBufferAllocateInfo commandBufferInfo = {};
+        commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        commandBufferInfo.commandPool = renderer->commandPool;
+        commandBufferInfo.commandBufferCount = 1;
+        commandBufferInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+
+        // create command buffer
+        VkResult result = vkAllocateCommandBuffers(renderer->logicalDevice, &commandBufferInfo, &renderer->commandBuffer);
+
+        // check for errors
+        if (result != VK_SUCCESS)
+        {
+            LogError(CHANNEL, "Command Buffer Allocation Failed");
+            return false;
+        }
+        LogSuccess(CHANNEL, "Command Buffer Allocated");
+
+        // record command buffer
+        {
+            // command buffer begin info
+            VkCommandBufferBeginInfo commandBufferBeginInfo = {};
+            commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+            // begin recording
+            {
+                VkResult result = vkBeginCommandBuffer(renderer->commandBuffer, &commandBufferBeginInfo);
+
+                // check for errors
+                if (result != VK_SUCCESS)
+                {
+                    LogError(CHANNEL, "Command Buffer Recording Failed");
+                    return false;
+                }
+                LogSuccess(CHANNEL, "Command Buffer Started Recording");
+            }
+
+            u32 imageIndex = 0;
+
+            // clear color
+            VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+
+            // render pass begin info
+            VkRenderPassBeginInfo renderPassBeginInfo = {};
+            renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassBeginInfo.framebuffer = renderer->framebuffers[imageIndex];
+            renderPassBeginInfo.renderArea.offset.x = 0;
+            renderPassBeginInfo.renderArea.offset.y = 0;
+            renderPassBeginInfo.renderArea.extent = renderer->extent;
+            renderPassBeginInfo.renderPass = renderer->renderPass;
+            renderPassBeginInfo.clearValueCount = 1;
+            renderPassBeginInfo.pClearValues = &clearColor;
+
+            // start render pass
+            vkCmdBeginRenderPass(renderer->commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            // bind graphics pipeline
+            vkCmdBindPipeline(renderer->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderer->graphicsPipeline);
+
+            // viewport setup
+            VkViewport viewport = {};
+            viewport.x = 0;
+            viewport.y = 0;
+            viewport.width = renderer->extent.width;
+            viewport.height = renderer->extent.height;
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            vkCmdSetViewport(renderer->commandBuffer, 0, 1, &viewport);
+
+            // set scissor
+            VkRect2D scissor = {};
+            scissor.offset.x = 0;
+            scissor.offset.y = 0;
+            scissor.extent = renderer->extent;
+            vkCmdSetScissor(renderer->commandBuffer, 0, 1, &scissor);
+
+            // draw command
+            vkCmdDraw(renderer->commandBuffer, 3, 1, 0, 0);
+
+            // end render pass
+            vkCmdEndRenderPass(renderer->commandBuffer);
+
+            {
+                // finish recording command buffer
+                VkResult result = vkEndCommandBuffer(renderer->commandBuffer);
+
+                // check for errors
+                if (result != VK_SUCCESS)
+                {
+                    LogError(CHANNEL, "Failed To Record Command Buffer");
+                    return false;
+                }
+                LogSuccess(CHANNEL, "Command Buffer Recorded");
+            }
+        }
+    }
+
+    // sync objects
+    {
+        // semaphore info
+        VkSemaphoreCreateInfo semaphoreInfo = {};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+        {
+            // create sempahores
+            VkResult result1 = vkCreateSemaphore(renderer->logicalDevice, &semaphoreInfo, null, &renderer->imageAvailableSemaphore);
+            VkResult result2 = vkCreateSemaphore(renderer->logicalDevice, &semaphoreInfo, null, &renderer->renderFinishedSemaphore);
+
+            // check for errors
+            if (result1 != VK_SUCCESS || result2 != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Semaphores Creation Failed");
+                return 0;
+            }
+            LogSuccess(CHANNEL, "Semaphores Created");
+        }
+
+        // fence ino
+        VkFenceCreateInfo fenceInfo = {};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+        {
+            // create fence
+            VkResult result = vkCreateFence(renderer->logicalDevice, &fenceInfo, null, &renderer->inFlightFence);
+
+            // check for errors
+            if (result != VK_SUCCESS)
+            {
+                LogError(CHANNEL, "Fence Creation Failed");
+                return 0;
+            }
+            LogSuccess(CHANNEL, "Fence Created");
+        }
+    }
+
     // if code comes here, return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
     return true;
@@ -967,6 +1104,15 @@ b8 StartupVKRenderer(void)
 
 void ShutdownVKRenderer(void)
 {
+    // destroy semaphores
+    vkDestroySemaphore(renderer->logicalDevice, renderer->imageAvailableSemaphore, null);
+    vkDestroySemaphore(renderer->logicalDevice, renderer->renderFinishedSemaphore, null);
+    LogSuccess(CHANNEL, "Semaphores Destroyed");
+
+    // destroy fence
+    vkDestroyFence(renderer->logicalDevice, renderer->inFlightFence, null);
+    LogSuccess(CHANNEL, "Fence Destroyed");
+
     // destroy command pool
     vkDestroyCommandPool(renderer->logicalDevice, renderer->commandPool, null);
     LogSuccess(CHANNEL, "Command Pool Created");

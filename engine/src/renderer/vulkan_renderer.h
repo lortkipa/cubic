@@ -38,6 +38,10 @@ typedef struct VKRenderer {
     VkPipeline graphicsPipeline;
     VkFramebuffer* framebuffers;
     VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);
