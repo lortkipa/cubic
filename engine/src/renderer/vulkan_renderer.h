@@ -9,6 +9,8 @@ typedef struct VKRenderer {
 #if defined(DEBUG)
     VkDebugUtilsMessengerEXT DebugMessenger;
 #endif
+
+    VkPhysicalDevice GPU;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);

@@ -2,7 +2,6 @@
 #include "platform/vulkan_platform.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
-#include <vulkan/vulkan_core.h>
 
 #define CHANNEL "Vulkan Renderer"
 
@@ -19,9 +18,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugVKCallback
  VkDebugUtilsMessageTypeFlagBitsEXT type,
  const VkDebugUtilsMessengerCallbackDataEXT* p_callbackData,
  void* userData);
+static b8 ChooseVKPhysicalDevice(void);
 
-b8
-StartupVKRenderer(void) {
+b8 StartupVKRenderer(void) {
     // create allocator
     if (!CreateStackAllocator(&allocator, 2 * sizeof(VKRenderer))) {
         LogError(CHANNEL, "Stack Allocator Creation Failed");
@@ -35,6 +34,8 @@ StartupVKRenderer(void) {
     if (!CreateVKInstance())
         return false;
     if (!CreateVKDebugMessenger())
+        return false;
+    if (!ChooseVKPhysicalDevice())
         return false;
 
     // if code comes here, everything is good, so return success
@@ -221,4 +222,69 @@ static void DestroyVKDebugMessenger(void)
         LogInfo("Vulkan Messenger", "%s",
                 p_callbackData->pMessage);
     }
+
+    // default return value
+    return VK_FALSE;
+}
+
+static b8 ChooseVKPhysicalDevice(void)
+{
+    // get gpu count
+    u32 gpuCount;
+    vkEnumeratePhysicalDevices(renderer->Instance, &gpuCount, null);
+    LogInfo(CHANNEL, "GPU Found: %d", gpuCount);
+
+    // get gpus
+    VkPhysicalDevice* gpus = RequestStackAllocatorMemory(&allocator, gpuCount * sizeof(VkPhysicalDevice));
+    vkEnumeratePhysicalDevices(renderer->Instance, &gpuCount, gpus);
+
+    // check if at list 1 gpu is found
+    if (gpuCount == 0)
+    {
+        LogError(CHANNEL, "No GPU Found");
+        return false;
+    }
+
+    // log gpus in debug mode
+#if defined(DEBUG)
+    for (u32 i = 0; i < gpuCount; i++)
+    {
+        VkPhysicalDeviceProperties properties;
+        vkGetPhysicalDeviceProperties(gpus[i], &properties);
+        LogInfo(CHANNEL, "GPU Found: \"%s\". Max Supported VK Version: %d.%d",
+                properties.deviceName, VK_API_VERSION_MAJOR(properties.apiVersion), VK_API_VERSION_MINOR(properties.apiVersion));
+    }
+#endif
+
+    // track if gpu is found
+    b8 gpuFound = false;
+
+    // loop gpus
+    for (u32 i = 0; i < gpuCount; i++)
+    {
+        // get physical device features and properties
+        VkPhysicalDeviceProperties properties;
+        VkPhysicalDeviceFeatures features;
+        vkGetPhysicalDeviceProperties(gpus[i], &properties);
+        vkGetPhysicalDeviceFeatures(gpus[i], &features);
+
+        // if suitable physical device is found, stop the loop and store device
+        if (features.geometryShader)
+        {
+            renderer->GPU = gpus[i];
+            gpuFound = true;
+            LogSuccess(CHANNEL, "Suitable GPU Found: \"%s\"", properties.deviceName);
+            break;
+        }
+    }
+
+    // if gpu is not found, return failure
+    if (!gpuFound)
+    {
+        LogError(CHANNEL, "Suitable GPU Not Found");
+        return false;
+    }
+
+    // if code comes here, gpu is found, so return success
+    return true;
 }
