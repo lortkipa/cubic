@@ -10,9 +10,10 @@ typedef struct VKRenderer {
     VkDebugUtilsMessengerEXT DebugMessenger;
 #endif
 
+    VkSurfaceKHR Surface;
     VkPhysicalDevice GPU;
     u32 graphicsQueueIndex;
-    VkDevice device;
+    VkDevice Device;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);

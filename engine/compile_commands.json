@@ -69,10 +69,10 @@
       "-O0",
       "-o",
       "../bin/libengine.so",
-      "src/platform/vulkan_platform.c"
+      "src/platform/vulkan_platform_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform.c",
+    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform_linux.c",
     "output": "/home/nikoloz/Cubic/bin/libengine.so"
   },
   {
@@ -235,12 +235,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/renderer-ec7054.o",
+      "/tmp/renderer-2d9ae1.o",
       "src/renderer/renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/renderer.c",
-    "output": "/tmp/renderer-ec7054.o"
+    "output": "/tmp/renderer-2d9ae1.o"
   },
   {
     "arguments": [
@@ -307,12 +307,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/vulkan_renderer-c436cd.o",
+      "/tmp/vulkan_renderer-74050d.o",
       "src/renderer/vulkan_renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/vulkan_renderer.c",
-    "output": "/tmp/vulkan_renderer-c436cd.o"
+    "output": "/tmp/vulkan_renderer-74050d.o"
   },
   {
     "arguments": [
@@ -379,12 +379,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/window_linux-6668f2.o",
+      "/tmp/window_linux-3a1f17.o",
       "src/platform/window_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window_linux.c",
-    "output": "/tmp/window_linux-6668f2.o"
+    "output": "/tmp/window_linux-3a1f17.o"
   },
   {
     "arguments": [
@@ -451,12 +451,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/vulkan_platform-06389a.o",
-      "src/platform/vulkan_platform.c"
+      "/tmp/vulkan_platform_linux-6088d3.o",
+      "src/platform/vulkan_platform_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
-    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform.c",
-    "output": "/tmp/vulkan_platform-06389a.o"
+    "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform_linux.c",
+    "output": "/tmp/vulkan_platform_linux-6088d3.o"
   },
   {
     "arguments": [
@@ -523,12 +523,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/event-a26b27.o",
+      "/tmp/event-f4aa9d.o",
       "src/core/event.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/event.c",
-    "output": "/tmp/event-a26b27.o"
+    "output": "/tmp/event-f4aa9d.o"
   },
   {
     "arguments": [
@@ -595,12 +595,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/memory-51401a.o",
+      "/tmp/memory-a1ba01.o",
       "src/core/memory.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/memory.c",
-    "output": "/tmp/memory-51401a.o"
+    "output": "/tmp/memory-a1ba01.o"
   },
   {
     "arguments": [
@@ -667,12 +667,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/logger-86a61f.o",
+      "/tmp/logger-e65d86.o",
       "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
-    "output": "/tmp/logger-86a61f.o"
+    "output": "/tmp/logger-e65d86.o"
   },
   {
     "arguments": [
@@ -739,12 +739,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/assert-4ee478.o",
+      "/tmp/assert-2d2355.o",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/assert.c",
-    "output": "/tmp/assert-4ee478.o"
+    "output": "/tmp/assert-2d2355.o"
   },
   {
     "arguments": [
@@ -811,11 +811,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/stack_allocator-8cd6b5.o",
+      "/tmp/stack_allocator-c47e17.o",
       "src/core/stack_allocator.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
-    "output": "/tmp/stack_allocator-8cd6b5.o"
+    "output": "/tmp/stack_allocator-c47e17.o"
   }
 ]

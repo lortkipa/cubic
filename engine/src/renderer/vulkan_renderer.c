@@ -12,6 +12,7 @@ static VKRenderer* renderer;
 
 static b8 CreateVKInstance(void);
 static void DestroyVKInstance(void);
+static void DestroySurface(void);
 static b8 CreateVKDebugMessenger(void);
 static void DestroyVKDebugMessenger(void);
 static VKAPI_ATTR VkBool32 VKAPI_CALL DebugVKCallback
@@ -23,9 +24,11 @@ static b8 ChooseVKPhysicalDevice(void);
 static b8 CreateVKDevice(void);
 static void DestroyVKDevice(void);
 
-b8 StartupVKRenderer(void) {
+b8 StartupVKRenderer(void) 
+{
     // create allocator
-    if (!CreateStackAllocator(&allocator, 2 * sizeof(VKRenderer))) {
+    if (!CreateStackAllocator(&allocator, 2 * sizeof(VKRenderer))) 
+    {
         LogError(CHANNEL, "Stack Allocator Creation Failed");
         return false;
     }
@@ -35,6 +38,8 @@ b8 StartupVKRenderer(void) {
 
     // init renderer stuff
     if (!CreateVKInstance())
+        return false;
+    if (!CreateVKSurface(renderer->Instance, &renderer->Surface))
         return false;
     if (!CreateVKDebugMessenger())
         return false;
@@ -52,6 +57,7 @@ void ShutdownVKRenderer(void)
 {
     // terminate renderer stuff
     DestroyVKDevice();
+    DestroySurface();
     DestroyVKDebugMessenger();
     DestroyVKInstance();
 
@@ -138,6 +144,13 @@ static void DestroyVKInstance(void)
     // destroy instance
     vkDestroyInstance(renderer->Instance, null);
     LogSuccess(CHANNEL, "Instance Destroyed");
+}
+
+static void DestroySurface(void)
+{
+    // destroy surface
+    vkDestroySurfaceKHR(renderer->Instance, renderer->Surface, null);
+    LogSuccess(CHANNEL, "Surface Destroyed");
 }
 
 static b8 CreateVKDebugMessenger(void)
@@ -371,7 +384,7 @@ static b8 CreateVKDevice(void)
         LogInfo(CHANNEL, "Loading Instance Extensions: \"%s\"", exts[i]);
     }
 #endif
-    
+
     // device info
     VkDeviceCreateInfo deviceInfo =
     {
@@ -384,7 +397,7 @@ static b8 CreateVKDevice(void)
     };
 
     // create device
-    VkResult result = vkCreateDevice(renderer->GPU, &deviceInfo, null, &renderer->device);
+    VkResult result = vkCreateDevice(renderer->GPU, &deviceInfo, null, &renderer->Device);
 
     // check if device was created
     if (result != VK_SUCCESS)
@@ -400,6 +413,6 @@ static b8 CreateVKDevice(void)
 static void DestroyVKDevice(void)
 {
     // destroy device
-    vkDestroyDevice(renderer->device, null);
+    vkDestroyDevice(renderer->Device, null);
     LogSuccess(CHANNEL, "Device Destroyed");
 }
