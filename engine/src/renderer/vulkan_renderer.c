@@ -371,6 +371,7 @@ static b8 CreateVKDevice(void)
     // device extensions
     const char* exts[] = 
     {
+        "VK_KHR_swapchain",
         "VK_KHR_dynamic_rendering"
     };
 
@@ -384,11 +385,17 @@ static b8 CreateVKDevice(void)
         LogInfo(CHANNEL, "Loading Instance Extensions: \"%s\"", exts[i]);
     }
 #endif
+    
+    // dynamic rendering info
+    VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingInfo = {};
+    dynamicRenderingInfo.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
+    dynamicRenderingInfo.dynamicRendering = VK_TRUE;
 
     // device info
     VkDeviceCreateInfo deviceInfo =
     {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pNext = &dynamicRenderingInfo,
         .pEnabledFeatures = &features,
         .queueCreateInfoCount = 1,
         .pQueueCreateInfos = &queueInfo,
