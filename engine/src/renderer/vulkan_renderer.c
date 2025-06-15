@@ -1,8 +1,8 @@
 #include "renderer/vulkan_renderer.h"
 #include "platform/vulkan_platform.h"
+#include "platform/window.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
-#include <errno.h>
 
 #define CHANNEL "Vulkan Renderer"
 
@@ -23,7 +23,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugVKCallback
 static b8 ChooseVKPhysicalDevice(void);
 static b8 CreateVKDevice(void);
 static void DestroyVKDevice(void);
-static void GetQueueHandles(void);
+static void GetVKQueueHandles(void);
+static b8 CreateVKSwapchain(void);
+static void DestroyVKSwapchain(void);
 
 b8 StartupVKRenderer(void) 
 {
@@ -48,7 +50,9 @@ b8 StartupVKRenderer(void)
         return false;
     if (!CreateVKDevice())
         return false;
-    GetQueueHandles();
+    GetVKQueueHandles();
+    if (!CreateVKSwapchain())
+        return false;
 
     // if code comes here, everything is good, so return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
@@ -58,6 +62,7 @@ b8 StartupVKRenderer(void)
 void ShutdownVKRenderer(void)
 {
     // terminate renderer stuff
+    DestroyVKSwapchain();
     DestroyVKDevice();
     DestroySurface();
     DestroyVKDebugMessenger();
@@ -448,7 +453,7 @@ static void DestroyVKDevice(void)
     LogSuccess(CHANNEL, "Device Destroyed");
 }
 
-static void GetQueueHandles(void)
+static void GetVKQueueHandles(void)
 {
     // get graphics queue handle
     vkGetDeviceQueue(renderer->Device,
@@ -463,4 +468,155 @@ static void GetQueueHandles(void)
             &renderer->PresentQueue);
 
     LogInfo(CHANNEL, "Got Graphics And Present Queue Handles");
+}
+
+static b8 CreateVKSwapchain(void)
+{
+    // get present mode count
+    u32 presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(renderer->GPU, renderer->Surface, &presentModeCount, null);
+    LogInfo(CHANNEL, "Present Mode Found: %d", presentModeCount);
+
+    // get present modes
+    VkPresentModeKHR presentModes[presentModeCount];
+    vkGetPhysicalDeviceSurfacePresentModesKHR(renderer->GPU, renderer->Surface, &presentModeCount, presentModes);
+
+    // store present mode here
+    VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
+
+    // choose best present mode
+    for (u32 i = 0; i < presentModeCount; i++)
+    {
+        if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
+        {
+            presentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+            break;
+        }
+    }
+    LogInfo(CHANNEL, "Suitable Present Mode Found: %s",
+            presentMode == VK_PRESENT_MODE_MAILBOX_KHR ? "Mailbox" : "Fifo");
+
+    // get surface capabilities
+    VkSurfaceCapabilitiesKHR surfaceCapabilities;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(renderer->GPU, renderer->Surface, &surfaceCapabilities);
+    LogInfo(CHANNEL, "Surface Min Image Count: %d", surfaceCapabilities.minImageCount);
+    LogInfo(CHANNEL, "SSurface Max Image Count: %d", surfaceCapabilities.maxImageCount);
+
+    // create extent
+    VkExtent2D extent;
+    if (surfaceCapabilities.currentExtent.width != UINT32_MAX)
+    {
+        extent = surfaceCapabilities.currentExtent;
+    }
+    else 
+    {
+        WindowSize size = GetWindowSize();
+
+        if (size.width > surfaceCapabilities.maxImageExtent.width)
+        {
+            extent.width = surfaceCapabilities.maxImageExtent.width;
+        }
+        else if (size.width < surfaceCapabilities.minImageExtent.width)
+        {
+            extent.width = surfaceCapabilities.minImageExtent.width;
+        }
+        else 
+        {
+            extent.width = size.width;
+        }
+
+        if (size.height > surfaceCapabilities.maxImageExtent.height)
+        {
+            extent.height = surfaceCapabilities.maxImageExtent.height;
+        }
+        else if (size.height < surfaceCapabilities.minImageExtent.height)
+        {
+            extent.height = surfaceCapabilities.minImageExtent.height;
+        }
+        else 
+        {
+            extent.height = size.height;
+        }
+    }
+    LogInfo(CHANNEL, "Swapchain Extent Width Choosen: %d", extent.width);
+    LogInfo(CHANNEL, "Swapchain Extent Height Choosen: %d", extent.height);
+
+    // get surface format count
+    u32 surfaceFormatCount;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(renderer->GPU, renderer->Surface, &surfaceFormatCount, null);
+    LogInfo(CHANNEL, "Surface Format Found: %d", surfaceFormatCount);
+
+    // get surface formats
+    VkSurfaceFormatKHR* surfaceFormats = RequestStackAllocatorMemory(&allocator, surfaceFormatCount * sizeof(VkSurfaceFormatKHR));
+    vkGetPhysicalDeviceSurfaceFormatsKHR(renderer->GPU, renderer->Surface, &surfaceFormatCount, surfaceFormats);
+
+    // choose best surface format
+    VkSurfaceFormatKHR surfaceFormat = surfaceFormats[0];
+    for (u32 i = 0; i < surfaceFormatCount; i++)
+    {
+        if (surfaceFormats[i].format == VK_FORMAT_B8G8R8A8_SRGB 
+                && surfaceFormats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+        {
+            surfaceFormat = surfaceFormats[i];
+            break;
+        }
+    }
+
+    // free surface formats
+    FreeStackAllocatorMemory(&allocator, surfaceFormatCount * sizeof(VkSurfaceFormatKHR));
+
+    // calculate correct image count
+    u32 imageCount = surfaceCapabilities.minImageCount + 1;
+    if (surfaceCapabilities.maxImageCount > 0)
+    {
+        imageCount = surfaceCapabilities.maxImageCount;
+    }
+    LogInfo(CHANNEL, "Swapchain Image Count Choose: %d", imageCount);
+
+    // swapchain info
+    VkSwapchainCreateInfoKHR swapchainInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        .surface = renderer->Surface,
+        .presentMode = presentMode,
+        .imageExtent = extent,
+        .minImageCount = imageCount,
+        .imageFormat = surfaceFormat.format,
+        .imageColorSpace = surfaceFormat.colorSpace,
+        .imageArrayLayers = 1,
+        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        .imageSharingMode = 
+            (renderer->GraphicsQueueFamilyIndex == renderer->PresentQueueFamilyIndex) ?
+            VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT,
+        .queueFamilyIndexCount =
+            (renderer->GraphicsQueueFamilyIndex == renderer->PresentQueueFamilyIndex) ?
+            0 : 2,
+        .pQueueFamilyIndices = 
+            (renderer->GraphicsQueueFamilyIndex == renderer->PresentQueueFamilyIndex) ?
+            null : (u32[]){renderer->GraphicsQueueFamilyIndex, renderer->PresentQueueFamilyIndex},
+        .preTransform = surfaceCapabilities.currentTransform,
+        .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        .clipped = VK_TRUE,
+        .oldSwapchain = VK_NULL_HANDLE
+    };
+
+    // create swapchain
+    VkResult result = vkCreateSwapchainKHR(renderer->Device, &swapchainInfo, null, &renderer->Swapchain);
+
+    // check if swapchain is created
+    if (result != VK_SUCCESS)
+    {
+        LogError(CHANNEL, "Swapchain Not Created");
+        return false;
+    }
+
+    LogSuccess(CHANNEL, "Swapchain Created");
+    return true;
+}
+
+static void DestroyVKSwapchain(void)
+{
+    // destroy swapchain
+    vkDestroySwapchainKHR(renderer->Device, renderer->Swapchain, null);
+    LogSuccess(CHANNEL, "Swapchain Destroyed");
 }

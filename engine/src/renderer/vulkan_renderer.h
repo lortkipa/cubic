@@ -17,6 +17,7 @@ typedef struct VKRenderer {
     VkQueue GraphicsQueue;
     VkQueue PresentQueue;
     VkDevice Device;
+    VkSwapchainKHR Swapchain;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);
