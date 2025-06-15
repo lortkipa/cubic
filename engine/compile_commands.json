@@ -235,12 +235,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/renderer-fe4947.o",
+      "/tmp/renderer-73cf0b.o",
       "src/renderer/renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/renderer.c",
-    "output": "/tmp/renderer-fe4947.o"
+    "output": "/tmp/renderer-73cf0b.o"
   },
   {
     "arguments": [
@@ -307,12 +307,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/vulkan_renderer-35fb91.o",
+      "/tmp/vulkan_renderer-99c36c.o",
       "src/renderer/vulkan_renderer.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/renderer/vulkan_renderer.c",
-    "output": "/tmp/vulkan_renderer-35fb91.o"
+    "output": "/tmp/vulkan_renderer-99c36c.o"
   },
   {
     "arguments": [
@@ -379,12 +379,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/window_linux-df1eee.o",
+      "/tmp/window_linux-132fda.o",
       "src/platform/window_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/window_linux.c",
-    "output": "/tmp/window_linux-df1eee.o"
+    "output": "/tmp/window_linux-132fda.o"
   },
   {
     "arguments": [
@@ -451,12 +451,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/vulkan_platform_linux-fe0882.o",
+      "/tmp/vulkan_platform_linux-ace6ca.o",
       "src/platform/vulkan_platform_linux.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/platform/vulkan_platform_linux.c",
-    "output": "/tmp/vulkan_platform_linux-fe0882.o"
+    "output": "/tmp/vulkan_platform_linux-ace6ca.o"
   },
   {
     "arguments": [
@@ -523,12 +523,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/event-e75aa8.o",
+      "/tmp/event-66da1d.o",
       "src/core/event.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/event.c",
-    "output": "/tmp/event-e75aa8.o"
+    "output": "/tmp/event-66da1d.o"
   },
   {
     "arguments": [
@@ -595,12 +595,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/memory-a92984.o",
+      "/tmp/memory-79f74d.o",
       "src/core/memory.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/memory.c",
-    "output": "/tmp/memory-a92984.o"
+    "output": "/tmp/memory-79f74d.o"
   },
   {
     "arguments": [
@@ -667,12 +667,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/logger-e925c5.o",
+      "/tmp/logger-a13e3c.o",
       "src/core/logger.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/logger.c",
-    "output": "/tmp/logger-e925c5.o"
+    "output": "/tmp/logger-a13e3c.o"
   },
   {
     "arguments": [
@@ -739,12 +739,12 @@
       "-x",
       "c",
       "-o",
-      "/tmp/assert-e0313a.o",
+      "/tmp/assert-ec54a0.o",
       "src/core/assert.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/assert.c",
-    "output": "/tmp/assert-e0313a.o"
+    "output": "/tmp/assert-ec54a0.o"
   },
   {
     "arguments": [
@@ -811,11 +811,11 @@
       "-x",
       "c",
       "-o",
-      "/tmp/stack_allocator-3af1fb.o",
+      "/tmp/stack_allocator-734e10.o",
       "src/core/stack_allocator.c"
     ],
     "directory": "/home/nikoloz/Cubic/engine",
     "file": "/home/nikoloz/Cubic/engine/src/core/stack_allocator.c",
-    "output": "/tmp/stack_allocator-3af1fb.o"
+    "output": "/tmp/stack_allocator-734e10.o"
   }
 ]

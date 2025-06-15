@@ -23,6 +23,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugVKCallback
 static b8 ChooseVKPhysicalDevice(void);
 static b8 CreateVKDevice(void);
 static void DestroyVKDevice(void);
+static void GetQueueHandles(void);
 
 b8 StartupVKRenderer(void) 
 {
@@ -47,6 +48,7 @@ b8 StartupVKRenderer(void)
         return false;
     if (!CreateVKDevice())
         return false;
+    GetQueueHandles();
 
     // if code comes here, everything is good, so return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
@@ -302,22 +304,34 @@ static b8 ChooseVKPhysicalDevice(void)
 
         // track wich queue families where found
         b8 graphicsFamilyFound = false;
+        b8 presentFamilyFound = false;
 
         // loop queue families
         for (u32 j = 0; j < queueFamilyCount; j++)
         {
             // check if graphics queue is found
-            if (queueFamilies[j].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            if (!graphicsFamilyFound && queueFamilies[j].queueFlags & VK_QUEUE_GRAPHICS_BIT)
             {
+                renderer->GraphicsQueueFamilyIndex = j;
                 graphicsFamilyFound = true;
                 LogInfo(CHANNEL, "Founded Graphics Queue Family For Device \"%s\" At Index: %d",
                         properties.deviceName, j);
             }
 
-            // if all queue family is found, store indinces and break the loop
-            if (graphicsFamilyFound)
+            // check if present queue is found
+            VkBool32 _presentFamilyFound;
+            vkGetPhysicalDeviceSurfaceSupportKHR(gpus[i], j, renderer->Surface, &_presentFamilyFound);
+            if (!presentFamilyFound && _presentFamilyFound)
             {
-                renderer->graphicsQueueIndex = j;
+                renderer->PresentQueueFamilyIndex = j;
+                presentFamilyFound = true;
+                LogInfo(CHANNEL, "Founded Present Queue Family For Device \"%s\" At Index: %d",
+                        properties.deviceName, j);
+            }
+
+            // if all queue family is found and break the loop
+            if (graphicsFamilyFound && presentFamilyFound)
+            {
                 break;
             }
         }
@@ -358,15 +372,22 @@ static b8 CreateVKDevice(void)
         .geometryShader = true 
     };
 
-    // queue create info
+    // create queue create info
+    u8 queueInfoCount = renderer->GraphicsQueueFamilyIndex == renderer->PresentQueueFamilyIndex ? 1 : 2;
+    VkDeviceQueueCreateInfo* queueInfos = RequestStackAllocatorMemory(&allocator, queueInfoCount * sizeof(VkDeviceQueueCreateInfo));
     float queuePriority = 1.0f;
-    VkDeviceQueueCreateInfo queueInfo = 
+    for (u8 i = 0; i < queueInfoCount; i++)
     {
-        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-        .queueCount = 1,
-        .queueFamilyIndex = renderer->graphicsQueueIndex,
-        .pQueuePriorities = &queuePriority
-    };
+        VkDeviceQueueCreateInfo queueInfo = 
+        {
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .queueCount = 1,
+            .queueFamilyIndex = i == 0 ? renderer->GraphicsQueueFamilyIndex : renderer->PresentQueueFamilyIndex,
+            .pQueuePriorities = &queuePriority
+        };
+        queueInfos[i] = queueInfo;
+    }
+    LogInfo(CHANNEL, "Queue Info Structs Created: %d", queueInfoCount);
 
     // device extensions
     const char* exts[] = 
@@ -385,7 +406,7 @@ static b8 CreateVKDevice(void)
         LogInfo(CHANNEL, "Loading Instance Extensions: \"%s\"", exts[i]);
     }
 #endif
-    
+
     // dynamic rendering info
     VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingInfo = {};
     dynamicRenderingInfo.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
@@ -397,14 +418,17 @@ static b8 CreateVKDevice(void)
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .pNext = &dynamicRenderingInfo,
         .pEnabledFeatures = &features,
-        .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &queueInfo,
+        .queueCreateInfoCount = queueInfoCount,
+        .pQueueCreateInfos = queueInfos,
         .enabledExtensionCount = extCount,
         .ppEnabledExtensionNames = exts
     };
 
     // create device
     VkResult result = vkCreateDevice(renderer->GPU, &deviceInfo, null, &renderer->Device);
+
+    // free queue infos from heap
+    FreeStackAllocatorMemory(&allocator, queueInfoCount * sizeof(VkDeviceQueueCreateInfo));
 
     // check if device was created
     if (result != VK_SUCCESS)
@@ -422,4 +446,21 @@ static void DestroyVKDevice(void)
     // destroy device
     vkDestroyDevice(renderer->Device, null);
     LogSuccess(CHANNEL, "Device Destroyed");
+}
+
+static void GetQueueHandles(void)
+{
+    // get graphics queue handle
+    vkGetDeviceQueue(renderer->Device,
+            renderer->GraphicsQueueFamilyIndex,
+            0,
+            &renderer->GraphicsQueue);
+
+    // get present queue handle
+    vkGetDeviceQueue(renderer->Device,
+            renderer->PresentQueueFamilyIndex,
+            0,
+            &renderer->PresentQueue);
+
+    LogInfo(CHANNEL, "Got Graphics And Present Queue Handles");
 }

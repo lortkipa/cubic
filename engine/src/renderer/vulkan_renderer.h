@@ -12,7 +12,10 @@ typedef struct VKRenderer {
 
     VkSurfaceKHR Surface;
     VkPhysicalDevice GPU;
-    u32 graphicsQueueIndex;
+    u32 GraphicsQueueFamilyIndex;
+    u32 PresentQueueFamilyIndex;
+    VkQueue GraphicsQueue;
+    VkQueue PresentQueue;
     VkDevice Device;
 } VKRenderer;
 
