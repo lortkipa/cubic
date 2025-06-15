@@ -57,10 +57,9 @@ b8 StartupEventSystem(void)
         }
     }
 
-    // loop thro event subs
+    // request memory for event sub types
     for (fu16 i = 0; i < MAX_EVENT_SUB_COUNT; i++)
     {
-        // request memory for event sub types
         eventSubs[i].type = RequestStackAllocatorMemory(&allocator, MAX_EVENT_TYPE_LENGTH);
     }
 
@@ -84,6 +83,19 @@ void ShutdownEventSystem(void)
     // zero out array lengths
     eventCount = 0;
     eventSubCount = 0;
+
+    // free event sub type strings
+    FreeStackAllocatorMemory(&allocator, MAX_EVENT_SUB_COUNT * MAX_EVENT_TYPE_LENGTH);
+    
+    // free event arg keys and values strings
+    FreeStackAllocatorMemory(&allocator, MAX_EVENT_COUNT * MAX_EVENT_ARG_COUNT * MAX_EVENT_ARG_KEY_LENGTH);
+    
+    // free event type strings
+    FreeStackAllocatorMemory(&allocator, MAX_EVENT_COUNT * MAX_EVENT_TYPE_LENGTH);
+
+    // free arrays from heap
+    FreeStackAllocatorMemory(&allocator, MAX_EVENT_COUNT * sizeof(Event));
+    FreeStackAllocatorMemory(&allocator, MAX_EVENT_SUB_COUNT * sizeof(EventSub));
 
     // destroy stack allocator
     DestroyStackAllocator(&allocator);

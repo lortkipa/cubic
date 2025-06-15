@@ -49,6 +49,9 @@ void ShutdownVKRenderer(void)
     DestroyVKDebugMessenger();
     DestroyVKInstance();
 
+    // free renderer from heap
+    FreeStackAllocatorMemory(&allocator, sizeof(VKRenderer));
+
     // destoy allocator
     DestroyStackAllocator(&allocator);
     LogSuccess(CHANNEL, SYSTEM_TERMINATED_MESSAGE);
@@ -280,7 +283,6 @@ static b8 ChooseVKPhysicalDevice(void)
 
     // free gpus from heap
     FreeStackAllocatorMemory(&allocator, gpuCount * sizeof(VkPhysicalDevice));
-
 
     // if gpu is not found, return failure
     if (!gpuFound)

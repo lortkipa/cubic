@@ -43,6 +43,12 @@ void DestroyStackAllocator(StackAllocator* p_allocator)
     LogSuccess(CHANNEL, "Allocator Destroyed {Size: %dB, Used: %dB}",
             p_allocator->size, p_allocator->used);
 
+    // check if all memory was freed
+    if (p_allocator->used > 0)
+    {
+        LogWarning(CHANNEL, "Forgot To Free %dB Of Memory", p_allocator->used);
+    }
+
     // zero out stuff
     p_allocator->memory = null;
     p_allocator->used = 0;

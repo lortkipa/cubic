@@ -68,6 +68,9 @@ void ShutdownRenderer(void)
     // shutdown backend
     renderer->Shutdown();
 
+    // free renderer structure
+    FreeStackAllocatorMemory(&allocator, sizeof(Renderer));
+
     // destroy allocator
     DestroyStackAllocator(&allocator);
 
