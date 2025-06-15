@@ -2,6 +2,7 @@
 #include "platform/vulkan_platform.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
+#include <vulkan/vulkan_core.h>
 
 #define CHANNEL "Vulkan Renderer"
 
@@ -10,13 +11,19 @@ static StackAllocator allocator;
 static VKRenderer* renderer;
 
 static b8 CreateVKInstance(void);
-static void DestroyVKInstance();
+static void DestroyVKInstance(void);
+static b8 CreateVKDebugMessenger(void);
+static void DestroyVKDebugMessenger(void);
+static VKAPI_ATTR VkBool32 VKAPI_CALL DebugVKCallback
+(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+ VkDebugUtilsMessageTypeFlagBitsEXT type,
+ const VkDebugUtilsMessengerCallbackDataEXT* p_callbackData,
+ void* userData);
 
-b8 StartupVKRenderer(void)
-{
+b8
+StartupVKRenderer(void) {
     // create allocator
-    if (!CreateStackAllocator(&allocator, 2 * sizeof(VKRenderer)))
-    {
+    if (!CreateStackAllocator(&allocator, 2 * sizeof(VKRenderer))) {
         LogError(CHANNEL, "Stack Allocator Creation Failed");
         return false;
     }
@@ -27,6 +34,8 @@ b8 StartupVKRenderer(void)
     // init renderer stuff
     if (!CreateVKInstance())
         return false;
+    if (!CreateVKDebugMessenger())
+        return false;
 
     // if code comes here, everything is good, so return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
@@ -36,6 +45,7 @@ b8 StartupVKRenderer(void)
 void ShutdownVKRenderer(void)
 {
     // terminate renderer stuff
+    DestroyVKDebugMessenger();
     DestroyVKInstance();
 
     // destoy allocator
@@ -113,9 +123,102 @@ static b8 CreateVKInstance(void)
     return true;
 }
 
-static void DestroyVKInstance()
+static void DestroyVKInstance(void)
 {
     // destroy instance
     vkDestroyInstance(renderer->Instance, null);
     LogSuccess(CHANNEL, "Instance Destroyed");
+}
+
+static b8 CreateVKDebugMessenger(void)
+{
+    // create debug messenger on debug mode only
+#if defined(DEBUG)
+
+    // vulkan messenger info
+    VkDebugUtilsMessengerCreateInfoEXT messengerInfo = 
+    {
+        .sType = messengerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+        .messageSeverity = 
+            VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+            VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+            VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+            VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT,
+        .messageType = 
+            VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+            VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+            VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+        .pfnUserCallback = DebugVKCallback
+    };
+
+    // load function
+    auto CreateMessenger = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(renderer->Instance, "vkCreateDebugUtilsMessengerEXT");
+
+    // check if function is loaded
+    if (!CreateMessenger)
+    {
+        LogError(CHANNEL, "vkCreateDebugUtilsMessengeinstancerEXT() Not Loaded");
+        return false;
+    }
+
+    // create vulkan messenger
+    VkResult result = CreateMessenger(renderer->Instance, &messengerInfo, null, &renderer->DebugMessenger);
+
+    // check result
+    if (result != VK_SUCCESS)
+    {
+        LogError(CHANNEL, "Messenger Creation Failed");
+        return false;
+    }
+    LogSuccess(CHANNEL, "Messenger Created");
+
+#endif
+
+    return true;
+}
+
+static void DestroyVKDebugMessenger(void)
+{
+    // destroy (and create) debug messenger on debug mode only
+#if defined(DEBUG)
+
+    // load function
+    auto DestroyMessenger = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(renderer->Instance, "vkDestroyDebugUtilsMessengerEXT");
+
+    // check if function is loaded
+    if (!DestroyMessenger)
+    {
+        LogError(CHANNEL, "vkDestroyDebugUtilsMessengeinstancerEXT() Not Loaded");
+    }
+    else 
+    {
+        // destroy messenger
+        DestroyMessenger(renderer->Instance, renderer->DebugMessenger, null);
+        LogSuccess(CHANNEL, "Messenger Destroyed");
+    }
+
+#endif
+}
+
+    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugVKCallback
+(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+ VkDebugUtilsMessageTypeFlagBitsEXT type,
+ const VkDebugUtilsMessengerCallbackDataEXT* p_callbackData,
+ void* userData)
+{
+    if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+    {
+        LogError("Vulkan Messenger", "%s",
+                p_callbackData->pMessage);
+    }
+    else if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+    {
+        LogWarning("Vulkan Messenger", "%s",
+                p_callbackData->pMessage);
+    }
+    else 
+    {
+        LogInfo("Vulkan Messenger", "%s",
+                p_callbackData->pMessage);
+    }
 }
