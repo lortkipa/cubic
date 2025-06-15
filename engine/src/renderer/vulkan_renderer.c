@@ -278,6 +278,10 @@ static b8 ChooseVKPhysicalDevice(void)
         }
     }
 
+    // free gpus from heap
+    FreeStackAllocatorMemory(&allocator, gpuCount * sizeof(VkPhysicalDevice));
+
+
     // if gpu is not found, return failure
     if (!gpuFound)
     {
