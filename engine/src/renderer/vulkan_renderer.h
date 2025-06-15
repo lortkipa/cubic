@@ -11,6 +11,8 @@ typedef struct VKRenderer {
 #endif
 
     VkPhysicalDevice GPU;
+    u32 graphicsQueueIndex;
+    VkDevice device;
 } VKRenderer;
 
 b8 StartupVKRenderer(void);

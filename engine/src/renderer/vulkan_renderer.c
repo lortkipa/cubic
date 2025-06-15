@@ -2,6 +2,7 @@
 #include "platform/vulkan_platform.h"
 #include "core/stack_allocator.h"
 #include "core/logger.h"
+#include <errno.h>
 
 #define CHANNEL "Vulkan Renderer"
 
@@ -19,6 +20,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugVKCallback
  const VkDebugUtilsMessengerCallbackDataEXT* p_callbackData,
  void* userData);
 static b8 ChooseVKPhysicalDevice(void);
+static b8 CreateVKDevice(void);
+static void DestroyVKDevice(void);
 
 b8 StartupVKRenderer(void) {
     // create allocator
@@ -37,6 +40,8 @@ b8 StartupVKRenderer(void) {
         return false;
     if (!ChooseVKPhysicalDevice())
         return false;
+    if (!CreateVKDevice())
+        return false;
 
     // if code comes here, everything is good, so return success
     LogSuccess(CHANNEL, SYSTEM_INITIALIZED_MESSAGE);
@@ -46,6 +51,7 @@ b8 StartupVKRenderer(void) {
 void ShutdownVKRenderer(void)
 {
     // terminate renderer stuff
+    DestroyVKDevice();
     DestroyVKDebugMessenger();
     DestroyVKInstance();
 
@@ -271,6 +277,38 @@ static b8 ChooseVKPhysicalDevice(void)
         vkGetPhysicalDeviceProperties(gpus[i], &properties);
         vkGetPhysicalDeviceFeatures(gpus[i], &features);
 
+        // get queue family count
+        u32 queueFamilyCount;
+        vkGetPhysicalDeviceQueueFamilyProperties(gpus[i], &queueFamilyCount, null);
+        LogInfo(CHANNEL, "Queue Family Found For Device \"%s\": %d",
+                properties.deviceName, queueFamilyCount);
+
+        // get queue families
+        VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+        vkGetPhysicalDeviceQueueFamilyProperties(gpus[i], &queueFamilyCount, queueFamilies);
+
+        // track wich queue families where found
+        b8 graphicsFamilyFound = false;
+
+        // loop queue families
+        for (u32 j = 0; j < queueFamilyCount; j++)
+        {
+            // check if graphics queue is found
+            if (queueFamilies[j].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            {
+                graphicsFamilyFound = true;
+                LogInfo(CHANNEL, "Founded Graphics Queue Family For Device \"%s\" At Index: %d",
+                        properties.deviceName, j);
+            }
+
+            // if all queue family is found, store indinces and break the loop
+            if (graphicsFamilyFound)
+            {
+                renderer->graphicsQueueIndex = j;
+                break;
+            }
+        }
+
         // if suitable physical device is found, stop the loop and store device
         if (features.geometryShader)
         {
@@ -278,6 +316,10 @@ static b8 ChooseVKPhysicalDevice(void)
             gpuFound = true;
             LogSuccess(CHANNEL, "Suitable GPU Found: \"%s\"", properties.deviceName);
             break;
+        }
+        else 
+        {
+            LogInfo(CHANNEL, "GPU \"%s\" Not Choosen", properties.deviceName);
         }
     }
 
@@ -293,4 +335,71 @@ static b8 ChooseVKPhysicalDevice(void)
 
     // if code comes here, gpu is found, so return success
     return true;
+}
+
+static b8 CreateVKDevice(void)
+{
+    // enabled features
+    VkPhysicalDeviceFeatures features =
+    {
+        .geometryShader = true 
+    };
+
+    // queue create info
+    float queuePriority = 1.0f;
+    VkDeviceQueueCreateInfo queueInfo = 
+    {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .queueCount = 1,
+        .queueFamilyIndex = renderer->graphicsQueueIndex,
+        .pQueuePriorities = &queuePriority
+    };
+
+    // device extensions
+    const char* exts[] = 
+    {
+        "VK_KHR_dynamic_rendering"
+    };
+
+    // calculate ext count dynamicly
+    u32 extCount = sizeof(exts) / sizeof(char*);
+
+    // log instance extensions in debug mode
+#if defined(DEBUG)
+    for (u32 i = 0; i < extCount; i++)
+    {
+        LogInfo(CHANNEL, "Loading Instance Extensions: \"%s\"", exts[i]);
+    }
+#endif
+    
+    // device info
+    VkDeviceCreateInfo deviceInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pEnabledFeatures = &features,
+        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos = &queueInfo,
+        .enabledExtensionCount = extCount,
+        .ppEnabledExtensionNames = exts
+    };
+
+    // create device
+    VkResult result = vkCreateDevice(renderer->GPU, &deviceInfo, null, &renderer->device);
+
+    // check if device was created
+    if (result != VK_SUCCESS)
+    {
+        LogError(CHANNEL, "Device Creation Failed");
+        return false;
+    }
+
+    LogSuccess(CHANNEL, "Device Created");
+    return true;
+}
+
+static void DestroyVKDevice(void)
+{
+    // destroy device
+    vkDestroyDevice(renderer->device, null);
+    LogSuccess(CHANNEL, "Device Destroyed");
 }
